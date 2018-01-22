@@ -1,0 +1,22 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "miku_sample_15___physics_09.moc3",
+		"Textures": [
+			"miku_sample_15___physics_09.2048/texture_00.png"
+		],
+		"Physics": "miku_sample_15___physics_09.physics3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}
