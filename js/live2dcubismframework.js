@@ -8,6 +8,15 @@ var LIVE2DCUBISMFRAMEWORK;
         return AnimationPoint;
     }());
     LIVE2DCUBISMFRAMEWORK.AnimationPoint = AnimationPoint;
+    var AnimationUserDataBody = (function () {
+        function AnimationUserDataBody(time, value) {
+            this.time = time;
+            this.value = value;
+        }
+        ;
+        return AnimationUserDataBody;
+    }());
+    LIVE2DCUBISMFRAMEWORK.AnimationUserDataBody = AnimationUserDataBody;
     var BuiltinAnimationSegmentEvaluators = (function () {
         function BuiltinAnimationSegmentEvaluators() {
         }
@@ -72,9 +81,18 @@ var LIVE2DCUBISMFRAMEWORK;
             this.modelTracks = new Array();
             this.parameterTracks = new Array();
             this.partOpacityTracks = new Array();
+            this.userDataBodys = new Array();
             this.duration = motion3Json['Meta']['Duration'];
             this.fps = motion3Json['Meta']['Fps'];
             this.loop = motion3Json['Meta']['Loop'];
+            this.userDataCount = motion3Json['Meta']['UserDataCount'];
+            this.totalUserDataSize = motion3Json['Meta']['TotalUserDataSize'];
+            if (motion3Json['UserData'] != null) {
+                motion3Json['UserData'].forEach(function (u) {
+                    _this.userDataBodys.push(new AnimationUserDataBody(u['Time'], u['Value']));
+                });
+                console.assert(this.userDataBodys.length === this.userDataCount);
+            }
             motion3Json['Curves'].forEach(function (c) {
                 var s = c['Segments'];
                 var points = new Array();
@@ -124,7 +142,33 @@ var LIVE2DCUBISMFRAMEWORK;
                 ? animation
                 : null;
         };
-        Animation.prototype.evaluate = function (time, weight, blend, target) {
+        Animation.prototype.addAnimationCallback = function (callbackFunc) {
+            if (this._callbackFunctions == null)
+                this._callbackFunctions = new Array();
+            this._callbackFunctions.push(callbackFunc);
+        };
+        Animation.prototype.removeAnimationCallback = function (callbackFunc) {
+            if (this._callbackFunctions != null) {
+                var _target = -1;
+                for (var _index = 0; _index < this._callbackFunctions.length; _index++) {
+                    if (this._callbackFunctions[_index] === callbackFunc) {
+                        _target = _index;
+                        break;
+                    }
+                }
+                if (_target >= 0)
+                    this._callbackFunctions.splice(_target, 1);
+            }
+        };
+        Animation.prototype.clearAnimationCallback = function () {
+            this._callbackFunctions = [];
+        };
+        Animation.prototype.callAnimationCallback = function (value) {
+            if (this._callbackFunctions.length > 0)
+                this._callbackFunctions.forEach(function (func) { func(value); });
+        };
+        Animation.prototype.evaluate = function (time, weight, blend, target, stackFlags, groups) {
+            if (groups === void 0) { groups = null; }
             if (weight <= 0.01) {
                 return;
             }
@@ -137,16 +181,63 @@ var LIVE2DCUBISMFRAMEWORK;
                 var p = target.parameters.ids.indexOf(t.targetId);
                 if (p >= 0) {
                     var sample = t.evaluate(time);
-                    target.parameters.values[p] = blend(target.parameters.values[p], sample, weight);
+                    if (stackFlags[0][p] != true) {
+                        target.parameters.values[p] = target.parameters.defaultValues[p];
+                        stackFlags[0][p] = true;
+                    }
+                    target.parameters.values[p] = blend(target.parameters.values[p], sample, t.evaluate(0), weight);
                 }
             });
             this.partOpacityTracks.forEach(function (t) {
                 var p = target.parts.ids.indexOf(t.targetId);
                 if (p >= 0) {
                     var sample = t.evaluate(time);
-                    target.parts.opacities[p] = blend(target.parts.opacities[p], sample, weight);
+                    if (stackFlags[1][p] != true) {
+                        target.parts.opacities[p] = 1;
+                        stackFlags[1][p] = true;
+                    }
+                    target.parts.opacities[p] = blend(target.parts.opacities[p], sample, t.evaluate(0), weight);
                 }
             });
+            this.modelTracks.forEach(function (t) {
+                if (groups != null) {
+                    var g = groups.getGroupById(t.targetId);
+                    if (g != null && g.target === "Parameter") {
+                        for (var _i = 0, _a = g.ids; _i < _a.length; _i++) {
+                            var tid = _a[_i];
+                            var p = target.parameters.ids.indexOf(tid);
+                            if (p >= 0) {
+                                var sample = t.evaluate(time);
+                                if (stackFlags[0][p] != true) {
+                                    target.parameters.values[p] = target.parameters.defaultValues[p];
+                                    stackFlags[0][p] = true;
+                                }
+                                target.parameters.values[p] = blend(target.parameters.values[p], sample, t.evaluate(0), weight);
+                            }
+                        }
+                    }
+                }
+            });
+            if (this._callbackFunctions != null) {
+                for (var _i = 0, _a = this.userDataBodys; _i < _a.length; _i++) {
+                    var ud = _a[_i];
+                    if (this.isEventTriggered(ud.time, time, this._lastTime, this.duration))
+                        this.callAnimationCallback(ud.value);
+                }
+            }
+            this._lastTime = time;
+        };
+        Animation.prototype.isEventTriggered = function (timeEvaluate, timeForward, timeBack, duration) {
+            if (timeForward > timeBack) {
+                if (timeEvaluate > timeBack && timeEvaluate < timeForward)
+                    return true;
+            }
+            else {
+                if (timeEvaluate > 0 && timeEvaluate < timeForward
+                    || timeEvaluate > timeBack && timeEvaluate < duration)
+                    return true;
+            }
+            return false;
         };
         Object.defineProperty(Animation.prototype, "isValid", {
             get: function () {
@@ -176,11 +267,11 @@ var LIVE2DCUBISMFRAMEWORK;
     var BuiltinAnimationBlenders = (function () {
         function BuiltinAnimationBlenders() {
         }
-        BuiltinAnimationBlenders.OVERRIDE = function (source, destination, weight) {
-            return (destination * weight);
+        BuiltinAnimationBlenders.OVERRIDE = function (source, destination, initial, weight) {
+            return ((destination * weight) + source * (1 - weight));
         };
-        BuiltinAnimationBlenders.ADD = function (source, destination, weight) {
-            return (source + (destination * weight));
+        BuiltinAnimationBlenders.ADD = function (source, destination, initial, weight) {
+            return (source + ((destination - initial) * weight));
         };
         BuiltinAnimationBlenders.MULTIPLY = function (source, destination, weight) {
             return (source * (1 + ((destination - 1) * weight)));
@@ -248,7 +339,7 @@ var LIVE2DCUBISMFRAMEWORK;
             this._goalTime += deltaTime;
             this._fadeTime += deltaTime;
         };
-        AnimationLayer.prototype._evaluate = function (target) {
+        AnimationLayer.prototype._evaluate = function (target, stackFlags) {
             if (this._animation == null) {
                 return;
             }
@@ -258,10 +349,10 @@ var LIVE2DCUBISMFRAMEWORK;
             var animationWeight = (this._goalAnimation != null)
                 ? (weight * this.weightCrossfade(this._fadeTime, this._fadeDuration))
                 : weight;
-            this._animation.evaluate(this._time, animationWeight, this.blend, target);
+            this._animation.evaluate(this._time, animationWeight, this.blend, target, stackFlags, this.groups);
             if (this._goalAnimation != null) {
                 animationWeight = 1 - (weight * this.weightCrossfade(this._fadeTime, this._fadeDuration));
-                this._goalAnimation.evaluate(this._goalTime, animationWeight, this.blend, target);
+                this._goalAnimation.evaluate(this._goalTime, animationWeight, this.blend, target, stackFlags, this.groups);
                 if (this._fadeTime > this._fadeDuration) {
                     this._animation = this._goalAnimation;
                     this._time = this._goalTime;
@@ -285,9 +376,24 @@ var LIVE2DCUBISMFRAMEWORK;
             enumerable: true,
             configurable: true
         });
+        Animator.prototype.addLayer = function (name, blender, weight) {
+            if (blender === void 0) { blender = BuiltinAnimationBlenders.OVERRIDE; }
+            if (weight === void 0) { weight = 1; }
+            var layer = new AnimationLayer();
+            layer.blend = blender;
+            layer.weightCrossfade = BuiltinCrossfadeWeighters.LINEAR;
+            layer.weight = weight;
+            layer.groups = this.groups;
+            this._layers.set(name, layer);
+        };
         Animator.prototype.getLayer = function (name) {
             return this._layers.has(name)
                 ? this._layers.get(name)
+                : null;
+        };
+        Animator.prototype.removeLayer = function (name) {
+            return this._layers.has(name)
+                ? this._layers.delete(name)
                 : null;
         };
         Animator.prototype.updateAndEvaluate = function (deltaTime) {
@@ -300,8 +406,11 @@ var LIVE2DCUBISMFRAMEWORK;
                     l._update(deltaTime);
                 });
             }
+            var paramStackFlags = new Array(this._target.parameters.count).fill(false);
+            var partsStackFlags = new Array(this._target.parts.count).fill(false);
+            var stackFlags = new Array(paramStackFlags, partsStackFlags);
             this._layers.forEach(function (l) {
-                l._evaluate(_this._target);
+                l._evaluate(_this._target, stackFlags);
             });
         };
         Animator._create = function (target, timeScale, layers) {
@@ -454,7 +563,7 @@ var LIVE2DCUBISMFRAMEWORK;
         Physics.maximumWeight = 100;
         Physics.airResistance = 5;
         Physics.movementThreshold = 0.001;
-        Physics.correctAngles = false;
+        Physics.correctAngles = true;
         return Physics;
     }());
     LIVE2DCUBISMFRAMEWORK.Physics = Physics;
@@ -602,17 +711,13 @@ var LIVE2DCUBISMFRAMEWORK;
         PhysicsOutput.prototype.evaluateValue = function (translation, particles) {
             var value = (translation.x * this.factor.x) + (translation.y * this.factor.y);
             if (this.factor.angle > 0) {
-                var parentGravity = Physics.gravity.multiplyByScalar(-1);
+                var parentGravity = Physics.gravity;
                 if (Physics.correctAngles && this.particleIndex > 1) {
                     parentGravity = particles[this.particleIndex - 2].position
                         .substract(particles[this.particleIndex - 1].position);
                 }
-                translation.y *= -1;
-                var angleResult = (Physics.directionToRadians(parentGravity.multiplyByScalar(-1), translation.multiplyByScalar(-1)));
-                value += (((((-translation.multiplyByScalar(-1).x) - (-parentGravity.multiplyByScalar(-1).x)) > 0)
-                    ? -angleResult
-                    : angleResult) * this.factor.angle);
-                translation.y *= -1;
+                var angleResult = (Physics.directionToRadians(parentGravity, translation));
+                value += (((translation.x - parentGravity.x) > 0) ? -angleResult : angleResult) * this.factor.angle;
             }
             value *= ((this.invert)
                 ? -1
@@ -676,7 +781,7 @@ var LIVE2DCUBISMFRAMEWORK;
                     .normalize();
                 p.position = _this.particles[i - 1].position.add(newDirection.multiplyByScalar(p.radius));
                 if (Math.abs(p.position.x) < Physics.movementThreshold) {
-                    p.position.x = p.lastPosition.x;
+                    p.position.x = 0;
                 }
                 if (delay != 0) {
                     p.velocity = p.position
@@ -810,4 +915,196 @@ var LIVE2DCUBISMFRAMEWORK;
         return PhysicsRigBuilder;
     }());
     LIVE2DCUBISMFRAMEWORK.PhysicsRigBuilder = PhysicsRigBuilder;
+    var UserData = (function () {
+        function UserData(target, userData3Json) {
+            var _this = this;
+            this._target = target;
+            if (!target) {
+                return;
+            }
+            this._version = userData3Json['Version'];
+            this._userDataCount = userData3Json['Meta']['UserDataCount'];
+            this._totalUserDataSize = userData3Json['Meta']['TotalUserDataSize'];
+            if (userData3Json['UserData'] != null) {
+                this._userDataBodys = new Array();
+                userData3Json['UserData'].forEach(function (u) {
+                    _this._userDataBodys.push(new UserDataBody(u['Target'], u['Id'], u['Value']));
+                });
+                console.assert(this._userDataBodys.length === this._userDataCount);
+            }
+        }
+        UserData._fromUserData3Json = function (target, userData3Json) {
+            var userdata = new UserData(target, userData3Json);
+            return (userdata._isValid)
+                ? userdata
+                : null;
+        };
+        Object.defineProperty(UserData.prototype, "_isValid", {
+            get: function () {
+                return this._target != null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UserData.prototype, "userDataCount", {
+            get: function () {
+                if (this._userDataBodys == null)
+                    return 0;
+                return this._userDataCount;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UserData.prototype, "totalUserDataSize", {
+            get: function () {
+                if (this._userDataBodys == null)
+                    return 0;
+                return this._totalUserDataSize;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UserData.prototype, "userDataBodys", {
+            get: function () {
+                if (this._userDataBodys == null)
+                    return null;
+                return this._userDataBodys;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        UserData.prototype.isExistUserDataById = function (id_) {
+            if (this._userDataBodys == null)
+                return false;
+            for (var _i = 0, _a = this._userDataBodys; _i < _a.length; _i++) {
+                var ud = _a[_i];
+                if (ud.id === id_)
+                    return true;
+            }
+            return false;
+        };
+        UserData.prototype.getUserDataValueById = function (id_) {
+            if (this._userDataBodys == null)
+                return null;
+            for (var _i = 0, _a = this._userDataBodys; _i < _a.length; _i++) {
+                var ud = _a[_i];
+                if (ud.id === id_)
+                    return ud.value;
+            }
+            return null;
+        };
+        UserData.prototype.getUserDataTargetById = function (id_) {
+            if (this._userDataBodys == null)
+                return null;
+            for (var _i = 0, _a = this._userDataBodys; _i < _a.length; _i++) {
+                var ud = _a[_i];
+                if (ud.id === id_)
+                    return ud.target;
+            }
+            return null;
+        };
+        UserData.prototype.getUserDataBodyById = function (id_) {
+            if (this._userDataBodys == null)
+                return null;
+            for (var _i = 0, _a = this._userDataBodys; _i < _a.length; _i++) {
+                var ud = _a[_i];
+                if (ud.id === id_)
+                    return ud;
+            }
+            return null;
+        };
+        return UserData;
+    }());
+    LIVE2DCUBISMFRAMEWORK.UserData = UserData;
+    var UserDataBuilder = (function () {
+        function UserDataBuilder() {
+        }
+        UserDataBuilder.prototype.setTarget = function (value) {
+            this._target = value;
+            return this;
+        };
+        UserDataBuilder.prototype.setUserData3Json = function (value) {
+            return this._userData3Json = value;
+        };
+        UserDataBuilder.prototype.build = function () {
+            return UserData._fromUserData3Json(this._target, this._userData3Json);
+        };
+        return UserDataBuilder;
+    }());
+    LIVE2DCUBISMFRAMEWORK.UserDataBuilder = UserDataBuilder;
+    var UserDataBody = (function () {
+        function UserDataBody(target, id, value) {
+            this.target = target;
+            this.id = id;
+            this.value = value;
+        }
+        return UserDataBody;
+    }());
+    LIVE2DCUBISMFRAMEWORK.UserDataBody = UserDataBody;
+    var UserDataTargetType;
+    (function (UserDataTargetType) {
+        UserDataTargetType[UserDataTargetType["UNKNOWN"] = 0] = "UNKNOWN";
+        UserDataTargetType[UserDataTargetType["ArtMesh"] = 1] = "ArtMesh";
+    })(UserDataTargetType || (UserDataTargetType = {}));
+    var Groups = (function () {
+        function Groups(model3Json) {
+            var _this = this;
+            if (typeof (model3Json['Groups']) !== "undefined") {
+                this._groupBodys = new Array();
+                model3Json['Groups'].forEach(function (u) {
+                    _this._groupBodys.push(new GroupBody(u['Target'], u['Name'], u['Ids']));
+                });
+            }
+            else {
+                this._groupBodys = null;
+            }
+        }
+        Object.defineProperty(Groups.prototype, "data", {
+            get: function () {
+                if (this._groupBodys == null)
+                    return null;
+                return this._groupBodys;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Groups.fromModel3Json = function (model3Json) {
+            return new Groups(model3Json);
+        };
+        Groups.prototype.getGroupById = function (targetId) {
+            if (this._groupBodys != null) {
+                for (var _i = 0, _a = this._groupBodys; _i < _a.length; _i++) {
+                    var body = _a[_i];
+                    if (body.name === targetId)
+                        return body;
+                }
+            }
+            return null;
+        };
+        return Groups;
+    }());
+    LIVE2DCUBISMFRAMEWORK.Groups = Groups;
+    var GroupBody = (function () {
+        function GroupBody(target, name, ids) {
+            this.target = target;
+            this.name = name;
+            this.ids = ids;
+        }
+        return GroupBody;
+    }());
+    LIVE2DCUBISMFRAMEWORK.GroupBody = GroupBody;
 })(LIVE2DCUBISMFRAMEWORK || (LIVE2DCUBISMFRAMEWORK = {}));
+
+(function(){
+	var script=document.createElement('script');
+	script.onload=function(){
+		var stats=new Stats();
+		document.body.appendChild(stats.dom);
+		requestAnimationFrame(function loop(){
+			stats.update();
+			requestAnimationFrame(loop)
+		});
+	};
+	script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
+	document.head.appendChild(script);
+})();
