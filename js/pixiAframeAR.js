@@ -82,7 +82,7 @@ var pixiaframear;
 		var xhrType = { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON };
 		var p1 = new Promise(function (resolve, reject) {
 			var loader = new PIXI.loaders.Loader();
-			loader.add('model3', "assets/Koharu/koharu.model3.json", xhrType);
+			loader.add('model3', "assets/Koharu/Koharu.model3.json", xhrType);
 			loader.add('motion1', "assets/Koharu/Koharu_01.motion3.json", xhrType);
 			loader.add('motion2', "assets/Koharu/Koharu_02.motion3.json", xhrType);
 			loader.add('motion3', "assets/Koharu/Koharu_03.motion3.json", xhrType);
