@@ -1,4 +1,4 @@
-MIT License
+pixiAframeAR.js は MIT License で提供しています。
 
 Copyright (c) 2017 t_takasaka
 
@@ -21,12 +21,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ------------------------------------------------------
-Live2D Proprietary Software License
-http://live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
-http://live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html
+Live2D Cubism Core(live2dcubismcore.min.js) は Live2D Proprietary Software License で提供されています。
+http://www.live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html
+http://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
 
-jsartoolkit5 license
-https://github.com/artoolkit/jsartoolkit5/blob/master/LICENSE.txt
+Live2D Cubism Components(live2dcubismframework.js, live2dcubismpixi.js) は Live2D Open Software License で提供されています。
+http://www.live2d.com/eula/live2d-open-software-license-agreement_jp.html
+http://www.live2d.com/eula/live2d-open-software-license-agreement_en.html
 
-AR.js license
+Live2D のサンプルモデルは Free Material License で提供されています。
+http://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html
+http://www.live2d.com/eula/live2d-free-material-license-agreement_en.html
+
+直近会計年度の売上高が 1000 万円以上の事業者様が利用する場合は、SDKリリース(出版許諾)ライセンスへの同意が必要になります。
+All business users must obtain a Publication License. "Business" means an entity with the annual gross revenue more than ten million (10,000,000) JPY for the most recent fiscal year.
+http://www.live2d.com/ja/products/releaselicense
+http://www.live2d.com/en/products/releaselicense
+
+AR.js は MIT License で提供されています。
 https://github.com/jeromeetienne/AR.js/blob/master/LICENSE.txt
