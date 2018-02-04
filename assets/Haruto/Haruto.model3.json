@@ -1,0 +1,9 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Haruto.moc3",
+		"Textures": [
+			"Haruto.512/texture_00.png"
+		]
+	}
+}

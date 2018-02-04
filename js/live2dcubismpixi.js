@@ -12,12 +12,15 @@ var LIVE2DCUBISMPIXI;
 (function (LIVE2DCUBISMPIXI) {
     var Model = (function (_super) {
         __extends(Model, _super);
-        function Model(coreModel, textures, animator, physicsRig) {
+        function Model(coreModel, textures, animator, physicsRig, userData, groups) {
             var _this = _super.call(this) || this;
             _this._coreModel = coreModel;
             _this._textures = textures;
             _this._animator = animator;
             _this._physicsRig = physicsRig;
+            _this._userData = userData;
+            _this._groups = groups;
+            _this._animator.groups = _this._groups;
             if (_this._coreModel == null) {
                 return _this;
             }
@@ -27,8 +30,10 @@ var LIVE2DCUBISMPIXI;
                 for (var v = 1; v < uvs.length; v += 2) {
                     uvs[v] = 1 - uvs[v];
                 }
-                _this._meshes[m] = new PIXI.mesh.Mesh(textures[_this._coreModel.drawables.textureIndices[m]], _this._coreModel.drawables.vertexPositions[m], uvs, _this._coreModel.drawables.indices[m], PIXI.DRAW_MODES.TRIANGLES);
+                _this._meshes[m] = new CubismMesh(textures[_this._coreModel.drawables.textureIndices[m]], _this._coreModel.drawables.vertexPositions[m], uvs, _this._coreModel.drawables.indices[m], PIXI.DRAW_MODES.TRIANGLES);
+                _this._meshes[m].name = _this._coreModel.drawables.ids[m];
                 _this._meshes[m].scale.y *= -1;
+                _this._meshes[m].isCulling = !LIVE2DCUBISMCORE.Utils.hasIsDoubleSidedBit(_this._coreModel.drawables.constantFlags[m]);
                 if (LIVE2DCUBISMCORE.Utils.hasBlendAdditiveBit(_this._coreModel.drawables.constantFlags[m])) {
                     if (_this._coreModel.drawables.maskCounts[m] > 0) {
                         var addFilter = new PIXI.Filter();
@@ -90,6 +95,13 @@ var LIVE2DCUBISMPIXI;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(Model.prototype, "userData", {
+            get: function () {
+                return this._userData;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(Model.prototype, "meshes", {
             get: function () {
                 return this._meshes;
@@ -100,6 +112,13 @@ var LIVE2DCUBISMPIXI;
         Object.defineProperty(Model.prototype, "masks", {
             get: function () {
                 return this._maskSpriteContainer;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Model.prototype, "groups", {
+            get: function () {
+                return this._groups;
             },
             enumerable: true,
             configurable: true
@@ -150,9 +169,21 @@ var LIVE2DCUBISMPIXI;
                 });
             }
         };
-        Model._create = function (coreModel, textures, animator, physicsRig) {
+        Model.prototype.getModelMeshById = function (id) {
+            if (this._meshes == null)
+                return null;
+            for (var _i = 0, _a = this._meshes; _i < _a.length; _i++) {
+                var mesh = _a[_i];
+                if (mesh.name === id)
+                    return mesh;
+            }
+            return null;
+        };
+        Model._create = function (coreModel, textures, animator, physicsRig, userData, groups) {
             if (physicsRig === void 0) { physicsRig = null; }
-            var model = new Model(coreModel, textures, animator, physicsRig);
+            if (userData === void 0) { userData = null; }
+            if (groups === void 0) { groups = null; }
+            var model = new Model(coreModel, textures, animator, physicsRig, userData, groups);
             if (!model.isValid) {
                 model.destroy();
                 return null;
@@ -186,10 +217,13 @@ var LIVE2DCUBISMPIXI;
                     var newContainer = new PIXI.Container;
                     for (var n = 0; n < _maskRelationList[m].length; ++n) {
                         var meshMaskID = coreModel.drawables.masks[m][n];
-                        var maskMesh = new PIXI.mesh.Mesh(pixiModel.meshes[meshMaskID].texture, pixiModel.meshes[meshMaskID].vertices, pixiModel.meshes[meshMaskID].uvs, pixiModel.meshes[meshMaskID].indices, PIXI.DRAW_MODES.TRIANGLES);
+                        var maskMesh = new CubismMesh(pixiModel.meshes[meshMaskID].texture, pixiModel.meshes[meshMaskID].vertices, pixiModel.meshes[meshMaskID].uvs, pixiModel.meshes[meshMaskID].indices, PIXI.DRAW_MODES.TRIANGLES);
+                        maskMesh.name = pixiModel.meshes[meshMaskID].name;
                         maskMesh.transform = pixiModel.meshes[meshMaskID].transform;
                         maskMesh.worldTransform = pixiModel.meshes[meshMaskID].worldTransform;
                         maskMesh.localTransform = pixiModel.meshes[meshMaskID].localTransform;
+                        maskMesh.isCulling = pixiModel.meshes[meshMaskID].isCulling;
+                        maskMesh.isMaskMesh = true;
                         maskMesh.filters = [_this._maskShader];
                         newContainer.addChild(maskMesh);
                     }
@@ -267,6 +301,13 @@ var LIVE2DCUBISMPIXI;
             this._physicsRigBuilder.setPhysics3Json(value);
             return this;
         };
+        ModelBuilder.prototype.setUserData3Json = function (value) {
+            if (!this._userDataBuilder) {
+                this._userDataBuilder = new LIVE2DCUBISMFRAMEWORK.UserDataBuilder();
+            }
+            this._userDataBuilder.setUserData3Json(value);
+            return this;
+        };
         ModelBuilder.prototype.addTexture = function (index, texture) {
             this._textures.splice(index, 0, texture);
             return this;
@@ -276,6 +317,44 @@ var LIVE2DCUBISMPIXI;
             if (weight === void 0) { weight = 1; }
             this._animatorBuilder.addLayer(name, blender, weight);
             return this;
+        };
+        ModelBuilder.prototype.addGroups = function (groups) {
+            this._groups = groups;
+            return this;
+        };
+        ModelBuilder.prototype.buildFromModel3Json = function (loader, model3Obj, callbackFunc) {
+            var _this = this;
+            var model3URL = model3Obj.url;
+            var modelDir = model3URL.substring(0, model3URL.lastIndexOf("/") + 1);
+            var textureCount = 0;
+            if (typeof (model3Obj.data['FileReferences']['Moc']) !== "undefined")
+                loader.add('moc', modelDir + model3Obj.data['FileReferences']['Moc'], { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.BUFFER });
+            if (typeof (model3Obj.data['FileReferences']['Textures']) !== "undefined") {
+                model3Obj.data['FileReferences']['Textures'].forEach(function (element) {
+                    loader.add('texture' + textureCount, modelDir + element);
+                    textureCount++;
+                });
+            }
+            if (typeof (model3Obj.data['FileReferences']['Physics']) !== "undefined")
+                loader.add('physics', modelDir + model3Obj.data['FileReferences']['Physics'], { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON });
+            if (typeof (model3Obj.data['FileReferences']['UserData']) !== "undefined")
+                loader.add('userdata', modelDir + model3Obj.data['FileReferences']['UserData'], { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON });
+            if (typeof (model3Obj.data['Groups'] !== "undefined"))
+                this._groups = LIVE2DCUBISMFRAMEWORK.Groups.fromModel3Json(model3Obj.data);
+            loader.load(function (loader, resources) {
+                if (typeof (resources['moc']) !== "undefined")
+                    _this.setMoc(LIVE2DCUBISMCORE.Moc.fromArrayBuffer(resources['moc'].data));
+                if (typeof (resources['texture' + 0]) !== "undefined") {
+                    for (var i = 0; i < textureCount; i++)
+                        _this.addTexture(i, resources['texture' + i].texture);
+                }
+                if (typeof (resources['physics']) !== "undefined")
+                    _this.setPhysics3Json(resources['physics'].data);
+                if (typeof (resources['userdata']) !== "undefined")
+                    _this.setUserData3Json(resources['userdata'].data);
+                var model = _this.build();
+                callbackFunc(model);
+            });
         };
         ModelBuilder.prototype.build = function () {
             var coreModel = LIVE2DCUBISMCORE.Model.fromMoc(this._moc);
@@ -293,9 +372,38 @@ var LIVE2DCUBISMPIXI;
                     .setTimeScale(this._timeScale)
                     .build();
             }
-            return Model._create(coreModel, this._textures, animator, physicsRig);
+            var userData = null;
+            if (this._userDataBuilder) {
+                userData = this._userDataBuilder
+                    .setTarget(coreModel)
+                    .build();
+            }
+            return Model._create(coreModel, this._textures, animator, physicsRig, userData, this._groups);
         };
         return ModelBuilder;
     }());
     LIVE2DCUBISMPIXI.ModelBuilder = ModelBuilder;
+    var CubismMesh = (function (_super) {
+        __extends(CubismMesh, _super);
+        function CubismMesh() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.isCulling = false;
+            _this.isMaskMesh = false;
+            return _this;
+        }
+        CubismMesh.prototype._renderWebGL = function (renderer) {
+            if (this.isMaskMesh === true)
+                renderer.state.setFrontFace(1);
+            else
+                renderer.state.setFrontFace(0);
+            if (this.isCulling === true)
+                renderer.state.setCullFace(1);
+            else
+                renderer.state.setCullFace(0);
+            _super.prototype._renderWebGL.call(this, renderer);
+            renderer.state.setFrontFace(0);
+        };
+        return CubismMesh;
+    }(PIXI.mesh.Mesh));
+    LIVE2DCUBISMPIXI.CubismMesh = CubismMesh;
 })(LIVE2DCUBISMPIXI || (LIVE2DCUBISMPIXI = {}));
