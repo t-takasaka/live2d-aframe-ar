@@ -1,18 +1,15 @@
-var pixiaframear;
-(function (pixiaframear) {
+window.onload = function () {
+	//マーカーに対しての直立フラグ
+	var stand_mode = false;
+
 	var marker = document.querySelector('a-marker');
 	if(!marker){ marker = document.querySelector('a-marker-camera'); }
+
 	var camera = document.querySelector("a-entity[camera]");
 	if(!camera){ camera = document.querySelector("a-marker-camera"); }
 	camera = camera.components.camera.camera;
 
-	//画面の回転フラグ
-	var orientationchanged = false;
-	//マーカーに対しての直立フラグ
-	var stand_mode = false;
-
 	var models = [];
-	var app = new PIXI.Application(0, 0, { transparent: true });
 	loadAssets().then(addModel).then(addPlane);
 
 	function loadAssets() {
@@ -95,7 +92,7 @@ var pixiaframear;
 			loader.load(function (loader, resources) {
 				var builder = new LIVE2DCUBISMPIXI.ModelBuilder();
 				builder.buildFromModel3Json(loader, resources['model3'], complate);
-				function complate(model){ setMotion(model, resources, 0.3, 0.5, resolve, reject); }
+				function complate(model){ setMotion(model, resources, 0.5, 0.5, resolve, reject); }
 			});
 		});
 		var p2 = new Promise(function (resolve, reject) {
@@ -113,7 +110,7 @@ var pixiaframear;
 			loader.load(function (loader, resources) {
 				var builder = new LIVE2DCUBISMPIXI.ModelBuilder();
 				builder.buildFromModel3Json(loader, resources['model3'], complate);
-				function complate(model){ setMotion(model, resources, 0.7, 0.5, resolve, reject); }
+				function complate(model){ setMotion(model, resources, 0.5, 0.5, resolve, reject); }
 			});
 		});
 		return Promise.all([p1, p2]);
@@ -122,14 +119,14 @@ var pixiaframear;
 		//モデルの登録
 		var p = new Promise(function (resolve, reject) {
 			models.forEach(function(model){
-				app.stage.addChild(model);
-				app.stage.addChild(model.masks);
-			});
-			app.stage.renderable = false;
-			app.ticker.add(function (deltaTime) {
-				models.forEach(function(model){
+				model.app = new PIXI.Application(0, 0, { transparent: true });
+//				model.app = new PIXI.Application(0, 0, { backgroundColor: 0x1099bb });
+				model.app.stage.addChild(model);
+				model.app.stage.addChild(model.masks);
+				model.app.stage.renderable = false;
+				model.app.ticker.add(function (deltaTime) {
 					model.update(deltaTime);
-					model.masks.update(app.renderer);
+					model.masks.update(model.app.renderer);
 				});
 			});
 			resolve();
@@ -137,82 +134,95 @@ var pixiaframear;
 		return Promise.all([p]);
 	}
 	function addPlane() {
-		var plane = document.createElement('a-plane');
-		plane.setAttribute('plane', '');
-		plane.setAttribute('color', '#000');
-		plane.setAttribute('height', '5');
-		plane.setAttribute('width', '5');
-		//マーカーを基準にしたモデルの相対位置
-		plane.setAttribute('position', '0 0 0');
-		var stand = stand_mode ? '0 0 0' : '-90 0 0';
-		plane.setAttribute('rotation', stand);
-		marker.appendChild(plane);
+		models.forEach(function(model, index){
+			var stand = stand_mode ? '0 0 0' : '-90 0 0';
+			var plane = document.createElement('a-plane');
+			plane.setAttribute('plane', '');
+			plane.setAttribute('id', index);
+			plane.setAttribute('color', '#000');
+			plane.setAttribute('height', '3');
+			plane.setAttribute('width', '3');
+			//マーカーを基準にしたモデルの相対位置
+if(index == 1){
+			plane.setAttribute('position', '1 0.1 0');
+}else{
+			plane.setAttribute('position', '-1 0 0');
+}
+//			plane.setAttribute('position', '0 0 0');
+			plane.setAttribute('rotation', stand);
+			plane.object3D.front = new THREE.Object3D();
+			plane.object3D.front.position.set(0, 0, -1);
+			plane.object3D.add(plane.object3D.front);
+			//モデルをプレーンに紐付け
+			plane.model = model;
+			//プレーンをマーカーに追加
+			marker.appendChild(plane);
+		});
 
-		plane.object3D.front = new THREE.Object3D();
-		plane.object3D.front.position.set(0, 0, -1);
-		plane.object3D.add(plane.object3D.front);
+		var init = function () {
+			var model = this.el.model;
+			var texture = new THREE.Texture(model.app.view);
+			texture.premultiplyAlpha = true;
 
-		var texture = new THREE.Texture(app.view);
-		texture.premultiplyAlpha = true;
-		var material = new THREE.MeshStandardMaterial({});
-		material.map = texture;
-		material.metalness = 0;
-		material.premultipliedAlpha = true;
-		material.transparent = true;
-		var mesh = null;
+			var material = new THREE.MeshStandardMaterial();
+			material.map = texture;
+			material.metalness = 0;
+			material.premultipliedAlpha = true;
+			material.transparent = true;
 
-		AFRAME.registerComponent('plane', {
-			init: function () {
-				mesh = this.el.getObject3D('mesh');
-				mesh.material = material;
-			},
-			update: function(){
-				var width = 512;
-				var height = 512;
-				app.view.width = width + "px";
-				app.view.height = height + "px";
-				app.renderer.resize(width, height);
+			var mesh = this.el.getObject3D('mesh');
+			mesh.material = material;
+			model.mesh = mesh;
+		}
+		var update = function(){
+			var width = 512, height = 512;
+			var model = this.el.model;
+			model.app.view.width = width + "px";
+			model.app.view.height = height + "px";
+			model.app.renderer.resize(width, height);
+			model.position = new PIXI.Point(width * model.pos_x, height * model.pos_y);
+			model.scale = new PIXI.Point(width * 0.7, width * 0.7);
+			model.masks.resize(model.app.view.width, model.app.view.height);
+			model.mesh.material.map.needsUpdate = true;
+		}
+		var tick = function (time, timeDelta) {
+			var model = this.el.model;
+			if(marker.object3D.visible){
+//if(this.el.id == 1){return;}
+				//画面が回転した直後（＝モデルの表示位置がずれている）でないなら描画する
+				if(!orientationchanged){ model.app.stage.renderable = true; }
+				model.mesh.material.map.needsUpdate = true;
 
-				models.forEach(function(model){
-					model.position = new PIXI.Point(width * model.pos_x, height * model.pos_y);
-					model.scale = new PIXI.Point(width * 0.5, width * 0.5);
-					model.masks.resize(app.view.width, app.view.height);
-				});
+				var pos = this.el.object3D.getWorldPosition();
+				var gaze = this.el.object3D.front.getWorldPosition();
+				gaze.sub(pos);
 
-				mesh.material.map.needsUpdate = true;
-			},
-			tick: function (time, timeDelta) {
-				if(marker.object3D.visible){
-					//画面が回転した直後（＝モデルの表示位置がずれている）でないなら描画する
-					if(!orientationchanged){ app.stage.renderable = true; }
-					mesh.material.map.needsUpdate = true;
+				//視線追従モーションの更新
+				model.gaze = gaze;
 
-					var pos = plane.object3D.getWorldPosition();
-					var gaze = plane.object3D.front.getWorldPosition();
-					gaze.sub(pos);
-					models.forEach(function(model){ 
-						//視線追従モーションの更新
-						model.gaze = gaze;
-
-						//ランダムでモーション再生
-						var motion = model.animator.getLayer("motion");
-						if(motion && motion.currentTime >= motion.currentAnimation.duration){
-							var rand = Math.floor(Math.random() * model.motions.length);
-							motion.stop();
-							motion.play(model.motions[rand]);
-						}
-					});
-				}else{
-					//マーカーが外れたら描画を止める
-					app.stage.renderable = false;
-					//マーカーが外れたら画面の回転フラグを折る
-					//→マーカーの再検出時にモデルの表示位置が修正されるため
-					orientationchanged = false;
+				//ランダムでモーション再生
+				var motion = model.animator.getLayer("motion");
+				if(motion && motion.currentTime >= motion.currentAnimation.duration){
+					var rand = Math.floor(Math.random() * model.motions.length);
+					motion.stop();
+					motion.play(model.motions[rand]);
 				}
+			}else{
+				//マーカーが外れたら描画を止める
+				model.app.stage.renderable = false;
+				//マーカーが外れたら画面の回転フラグを折る
+				//→マーカーの再検出時にモデルの表示位置が修正されるため
+				orientationchanged = false;
 			}
+		}
+		AFRAME.registerComponent('plane', {
+			init: init,
+			update: update,
+			tick: tick
 		});
 	}
 
+	//画面を押下したときの処理
 	var click_event = function (e) {
 		//クリックモーションの再生
 		models.forEach(function(model){ 
@@ -223,21 +233,25 @@ var pixiaframear;
 			}
 		});
 	}
-	//PCとスマホの選択イベントの振り分け
+	//PCとスマホで選択イベントを振り分け
 	if(window.ontouchstart === undefined){
 		window.onclick = click_event;
 	}else{
 		window.ontouchstart = click_event;
 	}
+
+	//画面が回転したときの処理
+	var orientationchanged = false;
 	window.onorientationchange = function (e) {
 		if (e === void 0) { e = null; }
 		//画面が回転するとモデルの表示位置がずれるため描画を止める
-		app.stage.renderable = false;
+		models.forEach(function(model){ 
+			model.app.stage.renderable = false;
+		});
 		//画面の回転フラグを立てる
 		orientationchanged = true;
 	}
-
-})(pixiaframear || (pixiaframear = {}));
+};
 
 //FPSの表示
 var script = document.createElement('script');
@@ -251,3 +265,4 @@ script.onload=function(){
 };
 script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
 document.head.appendChild(script);
+
