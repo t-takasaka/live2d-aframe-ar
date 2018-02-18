@@ -1,6 +1,6 @@
 <html>
 	<head>
-	        <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/0.7.1/aframe.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/0.7.1/aframe.min.js"></script>
 		<script src="js/aframe-ar.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.0/pixi.js"></script>
 
@@ -12,9 +12,10 @@
 	</head>
 	<body style="margin:0px; overflow:hidden;">
 		<!-- maxDetectionRateはマーカーの検出フレームレート。モバイル向けなら15～20程度が目安 -->
-		<a-scene embedded arjs="debugUIEnabled: false; detectionMode: mono; maxDetectionRate: 15;" vr-mode-ui="enabled: false">
+		<a-scene embedded arjs="debugUIEnabled: false; detectionMode: mono; maxDetectionRate: 15;" vr-mode-ui="enabled: false;">
 			<a-marker preset='custom' url='assets/logo_marker.patt'></a-marker>
 			<a-entity camera></a-entity>
 		</a-scene>
+		<button id="start" style="position: absolute; top: 20px; right: 20px;">Start</button>
 	</body>
 </html>

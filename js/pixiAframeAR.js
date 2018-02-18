@@ -9,8 +9,54 @@ window.onload = function () {
 	if(!camera){ camera = document.querySelector("a-marker-camera"); }
 	camera = camera.components.camera.camera;
 
+	var scene;
+	var start_btn = document.querySelector('#start');
+	start_btn.addEventListener('click', e => {
+		e.preventDefault();
+
+		var width = document.body.clientWidth;
+		var height = document.body.clientHeight;
+		var back = document.createElement('canvas');
+		var video = document.querySelector("video");
+		back.width = Math.floor(scene.clientWidth);
+		back.height = Math.floor(scene.clientHeight);
+console.log(scene.clientWidth + ", " + scene.clientHeight);
+var left = video.style.marginLeft;
+var top = video.style.marginTop;
+
+console.log(video.style.width + ", " + video.style.height);
+alert(scene.clientWidth + ":" + scene.clientHeight + ", " + video.style.width + ":" + video.style.height + ", " + left + ":" + top);
+//PCだとscreenshot.data.width・heightをscene.clientWidth・Heightの半分にすると丁度合う
+//スマホだと高さは合っているが幅がズレている。おそらくvideo.style.marginLeftの影響？？？
+//またモデルの表示サイズも違っている気がする。これはPC版と同じくscreenshot.dataを半分にすれば合う？？？
+//737:553, 414:553
+
+		var context = back.getContext("2d");
+		context.drawImage(video, 0, 0);
+
+		var screenshot = scene.components.screenshot;
+		screenshot.data.width = Math.floor(scene.clientWidth);
+		screenshot.data.height = Math.floor(scene.clientHeight);
+		var front = screenshot.getCanvas("perspective");
+		context.drawImage(front, 0, 0);
+
+		back.toBlob(function (blob) {
+			var fileName = 'screenshot-' + Date.now() + '.png';
+			var linkEl = document.createElement('a');
+			var url = URL.createObjectURL(blob);
+			linkEl.href = url;
+			linkEl.setAttribute('download', fileName);
+			linkEl.style.display = 'none';
+			document.body.appendChild(linkEl);
+			setTimeout(function () {
+				linkEl.click();
+				document.body.removeChild(linkEl);
+			}, 1);
+		}, 'image/png');
+	}, false);
+
 	var models = [];
-	var app = new PIXI.Application(0, 0, { transparent: true });
+	var app = new PIXI.Application(0, 0, { transparent: true, preserveDrawingBuffer: true });
 	loadAssets().then(addModel).then(addPlane);
 
 	function loadAssets() {
@@ -153,13 +199,13 @@ window.onload = function () {
 		texture.premultiplyAlpha = true;
 		var material = new THREE.MeshBasicMaterial();
 		material.map = texture;
-		material.fog = false;
 		material.flatShading = true;
 		material.premultipliedAlpha = true;
 		material.transparent = true;
 		var mesh = null;
 
 		var init = function () {
+			scene = this.el.sceneEl;
 			mesh = this.el.getObject3D('mesh');
 			mesh.material = material;
 		}
