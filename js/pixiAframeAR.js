@@ -250,3 +250,11 @@ script.onload=function(){
 script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
 document.head.appendChild(script);
 */
+/*
+window.console = {};
+window.console.log = function(i){ return; }
+window.console.warn = function(i){ return; }
+window.console.assert = function(i){ return; }
+window.console.time = function(i){ return; }
+window.console.timeEnd = function(i){ return; }
+*/
