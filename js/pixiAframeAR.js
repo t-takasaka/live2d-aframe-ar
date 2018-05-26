@@ -1,5 +1,4 @@
-var pixiaframear;
-(function (pixiaframear) {
+window.onload = function () {
 	var marker = document.querySelector('a-marker');
 	if(!marker){ marker = document.querySelector('a-marker-camera'); }
 	var camera = document.querySelector("a-entity[camera]");
@@ -236,9 +235,8 @@ var pixiaframear;
 		//‰æ–Ê‚Ì‰ñ“]ƒtƒ‰ƒO‚ð—§‚Ä‚é
 		orientationchanged = true;
 	}
-
-})(pixiaframear || (pixiaframear = {}));
-
+};
+/*
 //FPS‚Ì•\Ž¦
 var script = document.createElement('script');
 script.onload=function(){
@@ -251,3 +249,4 @@ script.onload=function(){
 };
 script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
 document.head.appendChild(script);
+*/
