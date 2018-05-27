@@ -14,7 +14,8 @@
 	<body style="margin:0px; overflow:hidden;">
 		<!-- maxDetectionRateはマーカーの検出フレームレート。モバイル向けなら15～20程度が目安 -->
 		<a-scene embedded arjs="debugUIEnabled:false; patternRatio: 0.9; detectionMode: mono; maxDetectionRate: 15;" vr-mode-ui="enabled: false">
-			<a-marker type='pattern' url='assets/logo_marker.patt' changeMatrixMode='modelViewMatrix'></a-marker>
+			<a-marker id="logo" type="pattern" url="assets/logo_marker.patt" changeMatrixMode="modelViewMatrix"></a-marker>
+			<a-marker id="qr" type="pattern" url="assets/qr_marker.patt" changeMatrixMode="modelViewMatrix"></a-marker>
 			<a-entity camera></a-entity>
 		</a-scene>
 	</body>
