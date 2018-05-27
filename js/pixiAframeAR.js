@@ -17,7 +17,7 @@ const texture_height = 512;
 const koharu = {
 	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
 	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
-	"scale":{ "x":0.5, "y":0.5}, 
+	"scale":{ "w":0.8, "h":0.8}, //1.0だとモーション次第ではみ出すので注意
 	"motion":{
 		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
 		"motion2":"assets/Koharu/Koharu_02.motion3.json", 
@@ -35,7 +35,7 @@ const koharu = {
 const haruto = {
 	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
 	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
-	"scale":{ "x":0.5, "y":0.5}, 
+	"scale":{ "w":0.8, "h":0.8}, //1.0だとモーション次第ではみ出すので注意
 	"motion":{
 		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
 		"motion2":"assets/Haruto/Haruto_02.motion3.json", 
@@ -57,9 +57,27 @@ const model_group1 = { "koharu":koharu };
 const model_group2 = { "haruto":haruto };
 
 //一つのマーカー上に表示するプレーンのグループ
-//const plane_group = { "plane1":model_group };
-const plane_group1 = { "plane1":model_group1 };
-const plane_group2 = { "plane1":model_group2 };
+//const plane_group = { 
+//	"plane":{ 
+//		"moedl_group":model_group1, 
+//		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
+//		"size":{ "w":0.5, "h":0.5 }, 
+//	}
+//};
+const plane_group1 = { 
+	"plane1":{ 
+		"moedl_group":model_group1, 
+		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
+		"scale":{ "w":1, "h":1 }, //1でマーカーの黒枠と同じサイズ
+	}
+};
+const plane_group2 = { 
+	"plane1":{ 
+		"moedl_group":model_group2, 
+		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
+		"scale":{ "w":1, "h":1 }, //1でマーカーの黒枠と同じサイズ
+	}
+};
 
 //一つのアプリ上に表示するマーカーのグループ
 //const marker_group = { 
@@ -174,8 +192,8 @@ window.onload = function(){
 						//モデルの位置、サイズ
 						model.position_x = config["position"]["x"];
 						model.position_y = config["position"]["y"];
-						model.scale_x = config["scale"]["x"];
-						model.scale_y = config["scale"]["y"];
+						model.scale_x = config["scale"]["w"];
+						model.scale_y = config["scale"]["h"];
 						models.push(model);
 
 						resolve();
@@ -199,11 +217,16 @@ window.onload = function(){
 				let plane = marker["plane_group"][plane_key];
 				let models = [];
 				//モデルの数だけ繰り返し
-				for(model_key in plane){
-					let model_config = plane[model_key];
+				for(model_key in plane["moedl_group"]){
+					let model = plane["moedl_group"][model_key];
 					//モデルの読み込み
-					p.push(loadModel(model_config, models));
+					p.push(loadModel(model, models));
 				}
+				models.position_x = plane["position"]["x"];
+				models.position_y = plane["position"]["y"];
+				models.position_z = plane["position"]["z"];
+				models.scale_w = plane["scale"]["w"];
+				models.scale_h = plane["scale"]["h"];
 				planes.push(models);
 			}
 			planes.id = marker["id"];
@@ -216,6 +239,7 @@ window.onload = function(){
 		let p = new Promise(function(resolve, reject){
 			markers.forEach(function(marker){
 				marker.forEach(function(plane){
+					//plane.app = new PIXI.Application(0, 0, { backgroundColor: 0x1099bb });
 					plane.app = new PIXI.Application(0, 0, { transparent:true });
 					plane.app.stage.renderable = false;
 
@@ -253,10 +277,11 @@ window.onload = function(){
 				let planeEl = document.createElement("a-plane");
 				planeEl.setAttribute("plane", "");
 				planeEl.setAttribute("color", "#000");
-				planeEl.setAttribute("height", "5");
-				planeEl.setAttribute("width", "5");
+				planeEl.setAttribute("width", plane.scale_w);
+				planeEl.setAttribute("height", plane.scale_h);
 				//マーカーを基準にしたモデルの相対位置の指定
-				planeEl.setAttribute("position", "0 0 0");
+				let position = plane.position_x + " " + plane.position_y + " " +plane.position_z;
+				planeEl.setAttribute("position", position);
 				//直立フラグが立っていたらX軸を-90度回転
 				const stand = stand_mode ? "0 0 0" : "-90 0 0";
 				planeEl.setAttribute("rotation", stand);
