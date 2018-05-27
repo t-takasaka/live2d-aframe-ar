@@ -16,7 +16,7 @@ const texture_height = 512;
 //モデルごとの設定
 const koharu = {
 	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
-	"position":{ "x":0.3, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
+	"position":{ "x":0.2, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
 	"scale":{ "x":0.5, "y":0.5}, 
 	"motion":{
 		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
@@ -34,7 +34,7 @@ const koharu = {
 };
 const haruto = {
 	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
-	"position":{ "x":0.7, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
+	"position":{ "x":0.8, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
 	"scale":{ "x":0.5, "y":0.5}, 
 	"motion":{
 		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
