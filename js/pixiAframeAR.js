@@ -16,7 +16,7 @@ const texture_height = 512;
 //モデルごとの設定
 const koharu = {
 	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
-	"position":{ "x":0.3, "y":0.5}, //プレーン中央からの相対位置
+	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
 	"scale":{ "x":0.5, "y":0.5}, 
 	"motion":{
 		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
@@ -34,7 +34,7 @@ const koharu = {
 };
 const haruto = {
 	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
-	"position":{ "x":0.7, "y":0.5}, //プレーン中央からの相対位置
+	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
 	"scale":{ "x":0.5, "y":0.5}, 
 	"motion":{
 		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
@@ -52,13 +52,23 @@ const haruto = {
 };
 
 //一つのプレーン上に表示するモデルのグループ
-const model_group1 = { "koharu":koharu, "haruto":haruto };
+//const model_group = { "koharu":koharu, "haruto":haruto };
+const model_group1 = { "koharu":koharu };
+const model_group2 = { "haruto":haruto };
 
 //一つのマーカー上に表示するプレーンのグループ
+//const plane_group = { "plane1":model_group };
 const plane_group1 = { "plane1":model_group1 };
+const plane_group2 = { "plane1":model_group2 };
 
 //一つのアプリ上に表示するマーカーのグループ
-const marker_group = { "marker1":plane_group1 };
+//const marker_group = { 
+//	"marker":{ "plane_group":plane_group, "id":"logo" } 
+//};
+const marker_group = { 
+	"marker1":{ "plane_group":plane_group1, "id":"qr" }, 
+	"marker2":{ "plane_group":plane_group2, "id":"logo" }, 
+};
 
 //////////////////////////////////////////////////////////////////////
 //↑設定項目
@@ -185,8 +195,8 @@ window.onload = function(){
 			let marker = marker_group[marker_key];
 			let planes = [];
 			//プレーンの数だけ繰り返し
-			for(plane_key in marker){
-				let plane = marker[plane_key];
+			for(plane_key in marker["plane_group"]){
+				let plane = marker["plane_group"][plane_key];
 				let models = [];
 				//モデルの数だけ繰り返し
 				for(model_key in plane){
@@ -196,6 +206,7 @@ window.onload = function(){
 				}
 				planes.push(models);
 			}
+			planes.id = marker["id"];
 			markers.push(planes);
 		}
 		return Promise.all(p);
@@ -232,6 +243,11 @@ window.onload = function(){
 	//DOMの設定
 	function setupDOM(){
 		markers.forEach(function(marker){
+			//マーカーの作成
+			const id = marker.id;
+			let markerEl = document.querySelector("a-marker#" + id);
+			if(!markerEl){ markerEl = document.querySelector("a-marker-camera#" + id); }
+
 			marker.forEach(function(plane){
 				//プレーンの作成
 				let planeEl = document.createElement("a-plane");
@@ -250,14 +266,11 @@ window.onload = function(){
 				planeEl.object3D.front.position.set(0, 0, -1);
 				planeEl.object3D.add(planeEl.object3D.front);
 
-				//マーカーの作成
-				let markerEl = document.querySelector("a-marker");
-				if(!markerEl){ markerEl = document.querySelector("a-marker-camera"); }
 				//マーカーにプレーンを紐付け
 				markerEl.appendChild(planeEl);
-
 				//プレーン同士を紐付け
 				planeEl.plane = plane;
+				//プレーンにマーカーを紐付け
 				planeEl.marker = markerEl;
 			});
 		});
