@@ -68,14 +68,14 @@ const plane_group1 = {
 	"plane1":{ 
 		"moedl_group":model_group1, 
 		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-		"scale":{ "w":1, "h":1 }, //1でマーカーの黒枠と同じサイズ
+		"scale":{ "w":3, "h":3 }, //1でマーカーの黒枠と同じサイズ
 	}
 };
 const plane_group2 = { 
 	"plane1":{ 
 		"moedl_group":model_group2, 
 		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-		"scale":{ "w":1, "h":1 }, //1でマーカーの黒枠と同じサイズ
+		"scale":{ "w":3, "h":3 }, //1でマーカーの黒枠と同じサイズ
 	}
 };
 
@@ -320,6 +320,9 @@ window.onload = function(){
 			//メッシュの紐付け
 			mesh = this.el.getObject3D("mesh");
 			mesh.material = material;
+			//モデルの表示が重なる場合を想定してデプスをクリアしておく
+			mesh.renderOrder = 999;
+			mesh.onBeforeRender = function(renderer){ renderer.clearDepth(); }
 			plane.mesh = mesh;
 		}
 		//コンポーネントが更新されると呼ばれる処理
