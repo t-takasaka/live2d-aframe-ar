@@ -1,130 +1,477 @@
-PIXI.loader.add('moc', "assets/Miku/Miku.moc3", { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.BUFFER });
-PIXI.loader.add('texture0', "assets/Miku/Miku_00.png");
-PIXI.loader.add('motion', "assets/Miku/Miku_08.motion3.json", { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON });
-PIXI.loader.add('physics', "assets/Miku/Miku.physics3.json");
-PIXI.loader.once('complete', onComplate);
-PIXI.loader.load();
+//////////////////////////////////////////////////////////////////////
+//↓設定項目ここから↓
+//////////////////////////////////////////////////////////////////////
+
+//FPSを表示する場合はtrue、表示しない場合はfalse
+const show_fps = true;
+
+//マーカーに対してモデルを垂直に立たせるときはtrue、平行に寝かせるときはfalse
+const stand_mode = false;
+
+//モデルごとの設定
+const koharu = {
+	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
+	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
+	"scale":{ "w":0.8, "h":0.8}, //1.0だとモーション次第ではみ出すので注意
+	"motion":{
+		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
+		"motion2":"assets/Koharu/Koharu_02.motion3.json", 
+		"motion3":"assets/Koharu/Koharu_03.motion3.json", 
+		"motion4":"assets/Koharu/Koharu_04.motion3.json", 
+		"motion5":"assets/Koharu/Koharu_05.motion3.json", 
+		"motion6":"assets/Koharu/Koharu_06.motion3.json", 
+		"motion7":"assets/Koharu/Koharu_07.motion3.json", 
+		"motion8":"assets/Koharu/Koharu_08.motion3.json", 
+		"motion9":"assets/Koharu/Koharu_09.motion3.json", 
+	}, 
+	"normal_motion":["motion2", "motion3", "motion4", "motion5", "motion6", "motion7", "motion8", "motion9", ], 
+	"click_motion":["motion1", ], 
+};
+const haruto = {
+	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
+	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
+	"scale":{ "w":0.8, "h":0.8}, //1.0だとモーション次第ではみ出すので注意
+	"motion":{
+		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
+		"motion2":"assets/Haruto/Haruto_02.motion3.json", 
+		"motion3":"assets/Haruto/Haruto_03.motion3.json", 
+		"motion4":"assets/Haruto/Haruto_04.motion3.json", 
+		"motion5":"assets/Haruto/Haruto_05.motion3.json", 
+		"motion6":"assets/Haruto/Haruto_06.motion3.json", 
+		"motion7":"assets/Haruto/Haruto_07.motion3.json", 
+		"motion8":"assets/Haruto/Haruto_08.motion3.json", 
+		"motion9":"assets/Haruto/Haruto_09.motion3.json", 
+	}, 
+	"normal_motion":["motion2", "motion3", "motion4", "motion5", "motion6", "motion7", "motion8", "motion9", ], 
+	"click_motion":["motion1", ], 
+};
+
 /*
-PIXI.loader.add('moc', "assets/Hiyori/Hiyori.moc3", { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.BUFFER });
-PIXI.loader.add('texture0', "assets/Hiyori/Hiyori_00.png");
-//※テクスチャが複数枚の場合は以下の行を追加していく
-//PIXI.loader.add('texture1', "assets/Hiyori/Hiyori_01.png");
-PIXI.loader.add('motion', "assets/Hiyori/Hiyori_m03.motion3.json", { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON });
-//PIXI.loader.add('physics', "assets/Hiyori/Hiyori.physics3.json");
-//PIXI.loader.once('complete', onComplate);
-//PIXI.loader.load();
+//一つのプレーン上に表示するモデルのグループ
+const model_group = { "koharu":koharu, "haruto":haruto };
+//一つのマーカー上に表示するプレーンのグループ
+const plane_group = { 
+	"plane":{ 
+		"moedl_group":model_group1, 
+		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
+		"size":{ "w":0.5, "h":0.5 }, 
+	}
+};
+//一つのアプリ上に表示するマーカーのグループ
+const marker_group = { 
+	"marker":{ "plane_group":plane_group, "id":"logo" } 
+};
 */
-/*
-PIXI.loader.add('moc', "assets/Koharu/Koharu.moc3", { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.BUFFER });
-PIXI.loader.add('texture0', "assets/Koharu/Koharu_color.png");
-PIXI.loader.add('motion', "assets/Koharu/Koharu.motion3.json", { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON });
-PIXI.loader.once('complete', onComplate);
-PIXI.loader.load();
-*/
 
-function onComplate(loader, resources) {
-	//モデルの構築
-	var moc = LIVE2DCUBISMCORE.Moc.fromArrayBuffer(resources['moc'].data);
-	var builder = new LIVE2DCUBISMPIXI.ModelBuilder().setMoc(moc).setTimeScale(1);
-	builder.addTexture(0, resources['texture0'].texture);
-	//※テクスチャが複数枚の場合は以下の行を追加していく
-//	builder.addTexture(1, resources['texture1'].texture);
-	builder.addAnimatorLayer("base", LIVE2DCUBISMFRAMEWORK.BuiltinAnimationBlenders.OVERRIDE, 1)
-	var model = builder.build();
-	//アニメーションの登録
-	var animation = LIVE2DCUBISMFRAMEWORK.Animation.fromMotion3Json(resources['motion'].data);
-	model.animator.getLayer("base").play(animation);
+const model_group1 = { "koharu":koharu };
+const model_group2 = { "haruto":haruto };
+const plane_group1 = { 
+	"plane1":{ 
+		"moedl_group":model_group1, 
+		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
+		"scale":{ "w":3, "h":3 }, //1でマーカーの黒枠と同じサイズ
+	}
+};
+const plane_group2 = { 
+	"plane1":{ 
+		"moedl_group":model_group2, 
+		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
+		"scale":{ "w":3, "h":3 }, //1でマーカーの黒枠と同じサイズ
+	}
+};
+const marker_group = { 
+//	"marker1":{ "plane_group":plane_group1, "id":"qr" }, 
+	"marker2":{ "plane_group":plane_group2, "id":"logo" }, 
+};
 
-	//モデルを張り付ける平面の設定
-	var plane = document.createElement('a-plane');
-	plane.setAttribute('model1', '');
-	//マーカーを基準にしたモデルの相対位置
-	plane.setAttribute('position', '0 0 0');
-	//モデルの確度。マーカーと垂直なら'0 0 0'、水平なら'-90 0 0'
-	plane.setAttribute('rotation', '-90 0 0');
+//////////////////////////////////////////////////////////////////////
+//↑設定項目ここまで↑
+//////////////////////////////////////////////////////////////////////
 
-	var marker = document.querySelector('a-marker');
-	if(!marker){ marker = document.querySelector('a-marker-camera'); }
-	marker.appendChild(plane);
-	
-	var orientationchanged = false;
-	var app;
-	AFRAME.registerComponent('model1', {
-		init: function () {
-			var el = this.el;
-			var scene = el.sceneEl;
-			var mesh = el.getObject3D('mesh');
+window.onload = function(){
+	//カメラの取得
+	//※a-marker-cameraはマーカーがカメラから外れた後も表示が残るので注意
+	let camera = document.querySelector("a-entity[camera]");
+	if(!camera){ camera = document.querySelector("a-marker-camera"); }
+	camera = camera.components.camera.camera;
 
-			//THREEのコンテキストを渡してPIXIを初期化する
-			//TODO:PIXI.ApplicationもPIXI.autoDetectRendererも不要
-			app = new PIXI.Application(0, 0, { antialias: false,context: scene.renderer.context, transparent: true, powerPreference: "high-performance" });
+	//マーカー
+	let markers = [];
 
-			//PIXIのコンテナにモデルを登録
-			app.stage.addChild(model);
-			app.stage.addChild(model.masks);
-			app.stage.renderable = false;
+	//モデルの読み込み→Pixiの設定→A-Frameの設定、の順番に処理する
+	//※前段の処理が終わるまで後段の処理はPromiseで待たせる
+	loadModels().then(setupAFrame);
 
-			//マテリアルの作成
-			var scale = "3.0"; //TODO:uniformで送る
-			var vertex_shader = "uniform vec2 u_scale; varying vec2 v_uv; void main(){ v_uv = uv; vec4; gl_Position = projectionMatrix * modelViewMatrix * vec4(position * " + scale + ", 1.0); }";
-			var fragment_shader = "uniform sampler2D texture; varying vec2 v_uv; void main(){ vec4 tex = texture2D(texture, v_uv); gl_FragColor = tex; }";
-			//TODO:テクスチャの指定が冗長。PIXI側から引っ張る
-			var loader = new THREE.TextureLoader();
-//			texture = loader.load("assets/Koharu/Koharu.png", function(){
-			var texture = loader.load("assets/Miku/Miku_00.png", function(){
-				texture.premultiplyAlpha = true;
-				texture.flipY = false;
-				mesh.material = new THREE.ShaderMaterial({
-					vertexShader: vertex_shader,
-					fragmentShader: fragment_shader,
-					uniforms: {texture: {type: "t", value: texture}},
-					premultipliedAlpha: true,
-					transparent: true,
+	function loadModels(){
+		const xhrType = { xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.JSON };
+		const animation = LIVE2DCUBISMFRAMEWORK.Animation;
+		const override = LIVE2DCUBISMFRAMEWORK.BuiltinAnimationBlenders.OVERRIDE;
+
+		//通常時に再生するモーションの設定
+		const setNormalMotion = function(model, resources, normal_motion){
+			let motions = [];
+			for(let i in normal_motion){ 
+				const data = resources[normal_motion[i]].data;
+				motions.push(animation.fromMotion3Json(data)); 
+			}
+			model.motions = motions;
+			model.animator.addLayer("motion", override, 1);
+
+			const rand = Math.floor(Math.random() * model.motions.length);
+			model.animator.getLayer("motion").play(model.motions[rand]);
+		}
+		//クリック時に再生するモーションの設定
+		const setClickMotion = function(model, resources, click_motion){
+			//※仮実装。最初のモーションで決め打ち
+			const data = resources[click_motion[0]].data;
+			model.click_motion = animation.fromMotion3Json(data);
+		}
+		//視線追従用のモーションの設定
+		const setGazeMotion = function(model, resources, normal_motion){
+			//※適当なモーションデータの不要な変数を空にして、視線追従用のモーションデータを作る
+			let data = resources[normal_motion[0]].data;
+			data.CurveCount = data.TotalPointCount = data.TotalSegmentCount = 0;
+			data.Curves = [];
+			const gaze_motion = animation.fromMotion3Json(data);
+			model.animator.addLayer("gaze", override, 1);
+			model.animator.getLayer("gaze").play(gaze_motion);
+
+			//視線追従モーションのパラメータ値更新
+			model.gaze = new THREE.Vector3();
+			const ids = model.parameters.ids;
+			//※2系と3系に対応するためmaxを取る。該当しないバージョンのindexOfは-1を返す
+			//※パラメータ自体が無い場合はエラーになるので注意
+			const angle_x = Math.max(ids.indexOf("ParamAngleX"), ids.indexOf("PARAM_ANGLE_X"));
+			const angle_y = Math.max(ids.indexOf("ParamAngleY"), ids.indexOf("PARAM_ANGLE_Y"));
+			const eye_x = Math.max(ids.indexOf("ParamEyeBallX"), ids.indexOf("PARAM_EYE_BALL_X"));
+			const eye_y = Math.max(ids.indexOf("ParamEyeBallY"), ids.indexOf("PARAM_EYE_BALL_Y"));
+			gaze_motion.evaluate = (time, weight, blend, target, stackFlags, groups) => {
+				//※垂直モードのときは縦方向で大きい値が取れるので調整する
+				if(stand_mode){ model.gaze.y *= 0.1; }
+				//パラメータの現在値、最大値、最小値
+				const values = target.parameters.values;
+				const max = target.parameters.maximumValues;
+				const min = target.parameters.minimumValues;
+				//視線の縦方向、横方向それぞれ正なら最大値側、負なら最小値側から値を取得する
+				const angle_h = model.gaze.x > 0 ? max[angle_x] : -min[angle_x];
+				const angle_v = model.gaze.y > 0 ? max[angle_y] : -min[angle_y];
+				const eye_h = model.gaze.x > 0 ? max[eye_x] : -min[eye_x];
+				const eye_v = model.gaze.y > 0 ? max[eye_y] : -min[eye_y];
+				//最終的なパラメータ値を計算する
+				values[angle_x] = blend(values[angle_x], model.gaze.x * angle_h, 0, weight);
+				values[angle_y] = blend(values[angle_y], model.gaze.y * angle_v, 0, weight);
+				values[eye_x] = blend(values[eye_x], model.gaze.x * eye_h, 0, weight);
+				values[eye_y] = blend(values[eye_y], model.gaze.y * eye_v, 0, weight);
+			}
+		}
+
+		//モデルの読み込み
+		const loadModel = function(config, models){
+			let p = new Promise(function(resolve, reject){
+				const loader = new PIXI.loaders.Loader();
+				//model3.jsonのキーとパスを追加
+				const model_key = Object.keys(config["model"])[0];
+				loader.add(model_key, config["model"][model_key], xhrType);
+				//motion3.jsonのキーとパスを追加
+				for(let key in config["motion"]){ loader.add(key, config["motion"][key], xhrType); }
+
+				//リソースの読み込み
+				const loadResources = function(loader, resources){
+					//モーションの設定
+					const setMotion = function(model){ 
+						if(model == null){ reject(); }
+
+						setNormalMotion(model, resources, config["normal_motion"]);
+						setClickMotion(model, resources, config["click_motion"]);
+						setGazeMotion(model, resources, config["normal_motion"]);
+
+						//モデルの位置、サイズ
+						model.position_x = config["position"]["x"];
+						model.position_y = config["position"]["y"];
+						model.scale_x = config["scale"]["w"];
+						model.scale_y = config["scale"]["h"];
+						models.push(model);
+
+						resolve();
+					}
+					//モデルの構築
+					const builder = new LIVE2DCUBISMPIXI.ModelBuilder();
+					builder.buildFromModel3Json(loader, resources[model_key], setMotion);
+				}
+				loader.load(loadResources);
+			});
+			return p;
+		}
+
+		let p = [];
+		//マーカーの数だけ繰り返し
+		for(marker_key in marker_group){
+			let marker = marker_group[marker_key];
+			let planes = [];
+			//プレーンの数だけ繰り返し
+			for(plane_key in marker["plane_group"]){
+				let plane = marker["plane_group"][plane_key];
+				let models = [];
+				//モデルの数だけ繰り返し
+				for(model_key in plane["moedl_group"]){
+					let model = plane["moedl_group"][model_key];
+					//モデルの読み込み
+					p.push(loadModel(model, models));
+				}
+				models.position_x = plane["position"]["x"];
+				models.position_y = plane["position"]["y"];
+				models.position_z = plane["position"]["z"];
+				models.scale_w = plane["scale"]["w"];
+				models.scale_h = plane["scale"]["h"];
+				planes.push(models);
+			}
+			planes.id = marker["id"];
+			markers.push(planes);
+		}
+		return Promise.all(p);
+	}
+	//DOMの設定
+	function setupDOM(){
+		markers.forEach(function(marker){
+			//マーカーの作成
+			const id = marker.id;
+			let markerEl = document.querySelector("a-marker#" + id);
+			if(!markerEl){ markerEl = document.querySelector("a-marker-camera#" + id); }
+
+			marker.forEach(function(plane){
+				//プレーンの作成
+				let planeEl = document.createElement("a-plane");
+				planeEl.setAttribute("plane", "");
+				planeEl.setAttribute("color", "#000");
+				planeEl.setAttribute("width", plane.scale_w);
+				planeEl.setAttribute("height", plane.scale_h);
+				//マーカーを基準にしたモデルの相対位置の指定
+				let position = plane.position_x + " " + plane.position_y + " " +plane.position_z;
+				planeEl.setAttribute("position", position);
+				//直立フラグが立っていたらX軸を-90度回転
+				const stand = stand_mode ? "0 0 0" : "-90 0 0";
+				planeEl.setAttribute("rotation", stand);
+
+				//正面方向の判定用オブジェクトの作成
+				planeEl.object3D.front = new THREE.Object3D();
+				planeEl.object3D.front.position.set(0, 0, -1);
+				planeEl.object3D.add(planeEl.object3D.front);
+
+				//マーカーにプレーンを紐付け
+				markerEl.appendChild(planeEl);
+				//プレーン同士を紐付け
+				planeEl.plane = plane;
+				//プレーンにマーカーを紐付け
+				planeEl.marker = markerEl;
+			});
+		});
+	}
+	//A-Frameの設定
+	function setupAFrame(){
+		//DOMの設定
+		setupDOM();
+
+		//コンポーネントが初期化されると呼ばれる処理
+		const init = function(){
+			let scene = this.el.sceneEl;
+			let plane = this.el.plane;
+
+			let context = scene.renderer.context;
+			let canvas = this.el.sceneEl.canvas;
+			let power = "high-performance";
+//			let options = { backgroundColor: 0x1099bb };
+//			let options = { transparent: true, powerPreference: power };
+			let options = { context: context, canvas: canvas, transparent: true, powerPreference: power };
+
+			//Pixiの設定
+			plane.app = new PIXI.Application(0, 0, options);
+			plane.app.stage.renderable = false;
+			//Pixiの変形用コンテナを追加
+			let container2d = new PIXI.projection.Container2d();
+			plane.app.stage.addChild(container2d);
+			plane.app.stage.container2d = container2d;
+
+			//モデルの紐付け
+			plane.forEach(function(model){
+				container2d.addChild(model)
+				container2d.addChild(model.masks)
+			});
+
+			//更新処理
+			const ticker = function(delta_time){
+				plane.forEach(function(model){
+					model.update(delta_time);
+					model.masks.update(plane.app.renderer);
 				});
-			});
 
-			//TODO:tick()と統合する
-			app.ticker.add(function (deltaTime) {
-				model.update(deltaTime);
-				model.masks.update(app.renderer);
+			}
+			//更新処理の紐付け
+			plane.app.ticker.add(ticker);
+
+			//テクスチャの作成
+			let texture = new THREE.Texture(plane.app.view);
+			texture.premultiplyAlpha = true;
+			//マテリアルの作成
+			let material = new THREE.MeshStandardMaterial({});
+			material.map = texture;
+			material.metalness = 0;
+			material.premultipliedAlpha = true;
+			material.transparent = true;
+			//メッシュの紐付け
+			mesh = this.el.getObject3D("mesh");
+			mesh.material = material;
+
+			mesh.renderOrder = 999;
+			//描画の前処理
+			mesh.onBeforeRender = function(renderer){
+				//TODO:renderer.state.reset()すると複数モデルの表示ができなくなる
+				plane.app.renderer.reset();
+				renderer.state.reset();
+				//モデルの表示が重なる場合を想定してデプスをクリアしておく
+				renderer.clearDepth();
+			}
+			//描画の後処理
+			mesh.onAfterRender = function(renderer){
+				renderer.state.reset();
+				plane.app.renderer.reset();
+			}
+
+			//メッシュの紐付け
+			plane.mesh = mesh;
+		}
+		//コンポーネントが更新されると呼ばれる処理
+		//※毎フレーム呼ばれる処理ではないので注意
+		const update = function(){
+			let plane = this.el.plane;
+			let scene = this.el.sceneEl;
+			plane.app.view.width = scene.clientWidth;
+			plane.app.view.height = scene.clientHeight;
+			plane.app.renderer.resize(scene.clientWidth, scene.clientHeight);
+
+			//TODO：モバイルで画面全体と一致しない
+			const w = scene.clientWidth, h = scene.clientHeight;
+			plane.forEach(function(model){
+				model.position = new PIXI.Point(w * model.position_x, h * model.position_y);
+				model.scale = new PIXI.Point(w * model.scale_x, w * model.scale_y);
+				model.masks.resize(plane.app.view.width, plane.app.view.height);
 			});
-		},
-		update: function(){
-		},
-		tick: function (time, timeDelta) {
+		}
+		//毎フレーム呼ばれる処理
+		const tick = function(time, timeDelta){
+			let plane = this.el.plane;
+			let scene = this.el.sceneEl;
+
+			if((plane.app.view.width != scene.clientWidth) || 
+				(plane.app.view.height != scene.clientHeight)){
+				this.update();
+			}
+
+			const world = plane.mesh.matrixWorld;
+			const vertices = plane.mesh.geometry.attributes.position.array;
+			let lt = new THREE.Vector3(vertices[0],  vertices[1],  vertices[2]);
+			let lb = new THREE.Vector3(vertices[3],  vertices[4],  vertices[5]);
+			let rt = new THREE.Vector3(vertices[6],  vertices[7],  vertices[8]);
+			let rb = new THREE.Vector3(vertices[12], vertices[13], vertices[14]);
+			lt = lt.applyMatrix4(world).project(camera);
+			lb = lb.applyMatrix4(world).project(camera);
+			rt = rt.applyMatrix4(world).project(camera);
+			rb = rb.applyMatrix4(world).project(camera);
+			const half_w = scene.clientWidth * 0.5;
+			const half_h = scene.clientHeight * 0.5;
+
+			//TODO：斜めから見るとアス比がズレる。このあたりがあやしい？
+			const rect = [
+				{ x:rt.x * half_w + half_w, y:rt.y * -half_h + half_h }, 
+				{ x:lt.x * half_w + half_w, y:lt.y * -half_h + half_h }, 
+				{ x:lb.x * half_w + half_w, y:lb.y * -half_h + half_h }, 
+				{ x:rb.x * half_w + half_w, y:rb.y * -half_h + half_h }, 
+			];
+			plane.app.stage.container2d.proj.mapQuad(plane.app.screen, rect);
+
+			let marker = this.el.marker;
 			if(marker.object3D.visible){
 				//画面が回転した直後（＝モデルの表示位置がずれている）でないなら描画する
-				if(!orientationchanged){ app.stage.renderable = true; }
+				if(!orientationchanged){ plane.app.stage.renderable = true; }
+
+				let pos = this.el.object3D.getWorldPosition();
+				let gaze = this.el.object3D.front.getWorldPosition();
+				gaze.sub(pos);
+				plane.forEach(function(model){
+					//視線追従モーションの更新
+					model.gaze = gaze;
+
+					//ランダムでモーション再生
+					let motion = model.animator.getLayer("motion");
+					if(motion && motion.currentTime >= motion.currentAnimation.duration){
+						let rand = Math.floor(Math.random() * model.motions.length);
+						motion.stop();
+						motion.play(model.motions[rand]);
+					}
+				});
 			}else{
 				//マーカーが外れたら描画を止める
-				app.stage.renderable = false;
+				plane.app.stage.renderable = false;
 				//マーカーが外れたら画面の回転フラグを折る
 				//→マーカーの再検出時にモデルの表示位置が修正されるため
 				orientationchanged = false;
 			}
 		}
-	});
+		//コンポーネントの登録
+		AFRAME.registerComponent("plane", { "init":init, "update":update, "tick":tick });
 
-	window.onorientationchange = function (event) {
-		if (event === void 0) { event = null; }
+	}
+
+	const click_event = function(e){
+		//クリックモーションの再生
+		markers.forEach(function(marker){
+			marker.forEach(function(plane){
+				plane.forEach(function(model){
+					let motion = model.animator.getLayer("motion");
+					if(motion && model.click_motion){
+						motion.stop();
+						motion.play(model.click_motion);
+					}
+				});
+			});
+		});
+	}
+
+	//画面の回転フラグ
+	//TODO:フラグはプレーンごとに持たせる必要が無いか？
+	let orientationchanged = false;
+	const rotate_event = function(e){
+		if(e === void 0){ e = null; }
 		//画面が回転するとモデルの表示位置がずれるため描画を止める
-		app.stage.renderable = false;
+		markers.forEach(function(marker){
+			marker.forEach(function(plane){
+				plane.app.stage.renderable = false;
+			});
+		});
 		//画面の回転フラグを立てる
 		orientationchanged = true;
-	};
+	}
+
+	//PCとスマホの選択イベントの振り分け
+	if(window.ontouchstart === undefined){
+		window.onclick = click_event;
+	}else{
+		window.ontouchstart = click_event;
+		window.onorientationchange = rotate_event;
+	}
 }
 
 //FPSの表示
-var script = document.createElement('script');
-script.onload=function(){
-	var stats = new Stats();
-	document.body.appendChild(stats.dom);
-	requestAnimationFrame(function loop(){
-		stats.update();
-		requestAnimationFrame(loop)
-	});
-};
-script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
-document.head.appendChild(script);
-
-
+if(show_fps){
+	let script = document.createElement("script");
+	script.onload = function(){
+		let stats = new Stats();
+		document.body.appendChild(stats.dom);
+		const loop = function(){
+			stats.update();
+			requestAnimationFrame(loop)
+		}
+		requestAnimationFrame(loop);
+	}
+	script.src = "//rawgit.com/mrdoob/stats.js/master/build/stats.min.js";
+	document.head.appendChild(script);
+}
