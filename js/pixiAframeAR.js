@@ -8,16 +8,22 @@ const show_fps = true;
 //マーカーに対してモデルを垂直に立たせるときはtrue、平行に寝かせるときはfalse
 const stand_mode = false;
 
+//プレーンの背景色を塗り潰すときはtrue、透過するときはfalse。デバッグ用
+const fill_mode = false;
+
 //テクスチャサイズ
-//※大きいと速度が落ちる。古い端末で読み込めないケースも発生する
-const texture_width = 512;
+//※立ち絵なら横256×縦512を基本として、モデルごとのscaleの設定で細かい調整をするのがおすすめ
+//※大きいと速度が落ちる。また古い端末で読み込めないケースが発生する可能性があるので注意
+const texture_width = 256;
 const texture_height = 512;
+const texture_rate = texture_width / texture_height;
+const texture_rate_inv = 1 / texture_rate;
 
 //モデルごとの設定
 const koharu = {
 	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
-	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
-	"scale":{ "w":0.8, "h":0.8}, //1.0だとモーション次第ではみ出すので注意
+	"position":{ "x":0.5, "y":0.5 }, //プレーン内の位置。幅・高さともに中央が0.5
+	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0を超えるとモーション次第ではみ出すので注意
 	"motion":{
 		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
 		"motion2":"assets/Koharu/Koharu_02.motion3.json", 
@@ -34,8 +40,8 @@ const koharu = {
 };
 const haruto = {
 	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
-	"position":{ "x":0.5, "y":0.5}, //プレーン内の位置。幅・高さともに中央が0.5
-	"scale":{ "w":0.8, "h":0.8}, //1.0だとモーション次第ではみ出すので注意
+	"position":{ "x":0.5, "y":0.5 }, //プレーン内の位置。幅・高さともに中央が0.5
+	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0を超えるとモーション次第ではみ出すので注意
 	"motion":{
 		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
 		"motion2":"assets/Haruto/Haruto_02.motion3.json", 
@@ -53,36 +59,39 @@ const haruto = {
 
 //一つのプレーン上に表示するモデルのグループ
 //const model_group = { "koharu":koharu, "haruto":haruto };
-const model_group1 = { "koharu":koharu };
-const model_group2 = { "haruto":haruto };
-
 //一つのマーカー上に表示するプレーンのグループ
 //const plane_group = { 
 //	"plane":{ 
 //		"moedl_group":model_group1, 
 //		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-//		"size":{ "w":0.5, "h":0.5 }, 
+//		"size":{ "w": 3 * texture_rate, "h": 3 }, 
 //	}
 //};
+//一つのアプリ上に表示するマーカーのグループ
+//const marker_group = { 
+//	"marker":{ "plane_group":plane_group, "id":"logo" } 
+//};
+
+
+//一つのプレーン上に表示するモデルのグループ
+const model_group1 = { "koharu":koharu };
+const model_group2 = { "haruto":haruto };
+//一つのマーカー上に表示するプレーンのグループ
 const plane_group1 = { 
 	"plane1":{ 
 		"moedl_group":model_group1, 
 		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-		"scale":{ "w":3, "h":3 }, //1でマーカーの黒枠と同じサイズ
+		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1でマーカーの黒枠と同じサイズ
 	}
 };
 const plane_group2 = { 
 	"plane1":{ 
 		"moedl_group":model_group2, 
 		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-		"scale":{ "w":3, "h":3 }, //1でマーカーの黒枠と同じサイズ
+		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1でマーカーの黒枠と同じサイズ
 	}
 };
-
 //一つのアプリ上に表示するマーカーのグループ
-//const marker_group = { 
-//	"marker":{ "plane_group":plane_group, "id":"logo" } 
-//};
 const marker_group = { 
 	"marker1":{ "plane_group":plane_group1, "id":"qr" }, 
 	"marker2":{ "plane_group":plane_group2, "id":"logo" }, 
@@ -239,8 +248,9 @@ window.onload = function(){
 		let p = new Promise(function(resolve, reject){
 			markers.forEach(function(marker){
 				marker.forEach(function(plane){
-					//plane.app = new PIXI.Application(0, 0, { backgroundColor: 0x1099bb });
-					plane.app = new PIXI.Application(0, 0, { transparent:true });
+					let option = (fill_mode) ? { "backgroundColor": 0x1099bb } : { "transparent": true };
+					option["powerPreference"] = "high-performance";
+					plane.app = new PIXI.Application(0, 0, option);
 					plane.app.stage.renderable = false;
 
 					//appにモデルを紐付け
@@ -336,7 +346,7 @@ window.onload = function(){
 			const w = texture_width, h = texture_height;
 			plane.forEach(function(model){
 				model.position = new PIXI.Point(w * model.position_x, h * model.position_y);
-				model.scale = new PIXI.Point(w * model.scale_x, w * model.scale_y);
+				model.scale = new PIXI.Point(w * model.scale_x, h * model.scale_y);
 				model.masks.resize(plane.app.view.width, plane.app.view.height);
 			});
 			plane.mesh.material.map.needsUpdate = true;
