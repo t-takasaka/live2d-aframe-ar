@@ -1,29 +1,29 @@
 //////////////////////////////////////////////////////////////////////
-//«İ’è€–Ú
+//â†“è¨­å®šé …ç›®
 //////////////////////////////////////////////////////////////////////
 
-//FPS‚ğ•\¦‚·‚éê‡‚ÍtrueA•\¦‚µ‚È‚¢ê‡‚Ífalse
+//FPSã‚’è¡¨ç¤ºã™ã‚‹å ´åˆã¯trueã€è¡¨ç¤ºã—ãªã„å ´åˆã¯false
 const show_fps = true;
 
-//ƒ}[ƒJ[‚É‘Î‚µ‚Äƒ‚ƒfƒ‹‚ğ‚’¼‚É—§‚½‚¹‚é‚Æ‚«‚ÍtrueA•½s‚ÉQ‚©‚¹‚é‚Æ‚«‚Ífalse
+//ãƒãƒ¼ã‚«ãƒ¼ã«å¯¾ã—ã¦ãƒ¢ãƒ‡ãƒ«ã‚’å‚ç›´ã«ç«‹ãŸã›ã‚‹ã¨ãã¯trueã€å¹³è¡Œã«å¯ã‹ã›ã‚‹ã¨ãã¯false
 const stand_mode = false;
 
-//ƒvƒŒ[ƒ“‚Ì”wŒiF‚ğ“h‚è’×‚·‚Æ‚«‚ÍtrueA“§‰ß‚·‚é‚Æ‚«‚ÍfalseBƒfƒoƒbƒO—p
+//ãƒ—ãƒ¬ãƒ¼ãƒ³ã®èƒŒæ™¯è‰²ã‚’å¡—ã‚Šæ½°ã™ã¨ãã¯trueã€é€éã™ã‚‹ã¨ãã¯falseã€‚ãƒ‡ãƒãƒƒã‚°ç”¨
 const fill_mode = false;
 
-//ƒeƒNƒXƒ`ƒƒƒTƒCƒY
-//¦—§‚¿ŠG‚È‚ç‰¡256~c512‚ğŠî–{‚Æ‚µ‚ÄAƒ‚ƒfƒ‹‚²‚Æ‚Ìscale‚Ìİ’è‚Å×‚©‚¢’²®‚ğ‚·‚é‚Ì‚ª‚¨‚·‚·‚ß
-//¦‘å‚«‚¢‚Æ‘¬“x‚ª—‚¿‚éB‚Ü‚½ŒÃ‚¢’[––‚Å“Ç‚İ‚ß‚È‚¢ƒP[ƒX‚ª”­¶‚·‚é‰Â”\«‚ª‚ ‚é‚Ì‚Å’ˆÓ
+//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚º
+//â€»ç«‹ã¡çµµãªã‚‰æ¨ª256Ã—ç¸¦512ã‚’åŸºæœ¬ã¨ã—ã¦ã€ãƒ¢ãƒ‡ãƒ«ã”ã¨ã®scaleã®è¨­å®šã§ç´°ã‹ã„èª¿æ•´ã‚’ã™ã‚‹ã®ãŒãŠã™ã™ã‚
+//â€»å¤§ãã„ã¨é€Ÿåº¦ãŒè½ã¡ã‚‹ã€‚ã¾ãŸå¤ã„ç«¯æœ«ã§èª­ã¿è¾¼ã‚ãªã„ã‚±ãƒ¼ã‚¹ãŒç™ºç”Ÿã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã®ã§æ³¨æ„
 const texture_width = 256;
 const texture_height = 512;
 const texture_rate = texture_width / texture_height;
 const texture_rate_inv = 1 / texture_rate;
 
-//ƒ‚ƒfƒ‹‚²‚Æ‚Ìİ’è
+//ãƒ¢ãƒ‡ãƒ«ã”ã¨ã®è¨­å®š
 const koharu = {
 	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
-	"position":{ "x":0.5, "y":0.5 }, //ƒvƒŒ[ƒ““à‚ÌˆÊ’uB•E‚‚³‚Æ‚à‚É’†‰›‚ª0.5
-	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0‚ğ’´‚¦‚é‚Æƒ‚[ƒVƒ‡ƒ“Ÿ‘æ‚Å‚Í‚İo‚·‚Ì‚Å’ˆÓ
+	"position":{ "x":0.5, "y":0.5 }, //ãƒ—ãƒ¬ãƒ¼ãƒ³å†…ã®ä½ç½®ã€‚å¹…ãƒ»é«˜ã•ã¨ã‚‚ã«ä¸­å¤®ãŒ0.5
+	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0ã‚’è¶…ãˆã‚‹ã¨ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ¬¡ç¬¬ã§ã¯ã¿å‡ºã™ã®ã§æ³¨æ„
 	"motion":{
 		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
 		"motion2":"assets/Koharu/Koharu_02.motion3.json", 
@@ -40,8 +40,8 @@ const koharu = {
 };
 const haruto = {
 	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
-	"position":{ "x":0.5, "y":0.5 }, //ƒvƒŒ[ƒ““à‚ÌˆÊ’uB•E‚‚³‚Æ‚à‚É’†‰›‚ª0.5
-	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0‚ğ’´‚¦‚é‚Æƒ‚[ƒVƒ‡ƒ“Ÿ‘æ‚Å‚Í‚İo‚·‚Ì‚Å’ˆÓ
+	"position":{ "x":0.5, "y":0.5 }, //ãƒ—ãƒ¬ãƒ¼ãƒ³å†…ã®ä½ç½®ã€‚å¹…ãƒ»é«˜ã•ã¨ã‚‚ã«ä¸­å¤®ãŒ0.5
+	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0ã‚’è¶…ãˆã‚‹ã¨ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ¬¡ç¬¬ã§ã¯ã¿å‡ºã™ã®ã§æ³¨æ„
 	"motion":{
 		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
 		"motion2":"assets/Haruto/Haruto_02.motion3.json", 
@@ -57,9 +57,9 @@ const haruto = {
 	"click_motion":["motion1", ], 
 };
 
-//ˆê‚Â‚ÌƒvƒŒ[ƒ“ã‚É•\¦‚·‚éƒ‚ƒfƒ‹‚ÌƒOƒ‹[ƒv
+//ä¸€ã¤ã®ãƒ—ãƒ¬ãƒ¼ãƒ³ä¸Šã«è¡¨ç¤ºã™ã‚‹ãƒ¢ãƒ‡ãƒ«ã®ã‚°ãƒ«ãƒ¼ãƒ—
 //const model_group = { "koharu":koharu, "haruto":haruto };
-//ˆê‚Â‚Ìƒ}[ƒJ[ã‚É•\¦‚·‚éƒvƒŒ[ƒ“‚ÌƒOƒ‹[ƒv
+//ä¸€ã¤ã®ãƒãƒ¼ã‚«ãƒ¼ä¸Šã«è¡¨ç¤ºã™ã‚‹ãƒ—ãƒ¬ãƒ¼ãƒ³ã®ã‚°ãƒ«ãƒ¼ãƒ—
 //const plane_group = { 
 //	"plane":{ 
 //		"moedl_group":model_group1, 
@@ -67,52 +67,56 @@ const haruto = {
 //		"size":{ "w": 3 * texture_rate, "h": 3 }, 
 //	}
 //};
-//ˆê‚Â‚ÌƒAƒvƒŠã‚É•\¦‚·‚éƒ}[ƒJ[‚ÌƒOƒ‹[ƒv
+//ä¸€ã¤ã®ã‚¢ãƒ—ãƒªä¸Šã«è¡¨ç¤ºã™ã‚‹ãƒãƒ¼ã‚«ãƒ¼ã®ã‚°ãƒ«ãƒ¼ãƒ—
 //const marker_group = { 
 //	"marker":{ "plane_group":plane_group, "id":"logo" } 
 //};
 
 
-//ˆê‚Â‚ÌƒvƒŒ[ƒ“ã‚É•\¦‚·‚éƒ‚ƒfƒ‹‚ÌƒOƒ‹[ƒv
+//ä¸€ã¤ã®ãƒ—ãƒ¬ãƒ¼ãƒ³ä¸Šã«è¡¨ç¤ºã™ã‚‹ãƒ¢ãƒ‡ãƒ«ã®ã‚°ãƒ«ãƒ¼ãƒ—
 const model_group1 = { "koharu":koharu };
 const model_group2 = { "haruto":haruto };
-//ˆê‚Â‚Ìƒ}[ƒJ[ã‚É•\¦‚·‚éƒvƒŒ[ƒ“‚ÌƒOƒ‹[ƒv
+//ä¸€ã¤ã®ãƒãƒ¼ã‚«ãƒ¼ä¸Šã«è¡¨ç¤ºã™ã‚‹ãƒ—ãƒ¬ãƒ¼ãƒ³ã®ã‚°ãƒ«ãƒ¼ãƒ—
 const plane_group1 = { 
 	"plane1":{ 
 		"moedl_group":model_group1, 
-		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1‚Åƒ}[ƒJ[‚Ì•˜g‚Æ“¯‚¶ƒTƒCƒY
+		"position":{ "x":0.0, "y":-0.1, "z":-0.1 }, 
+		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1ã§ãƒãƒ¼ã‚«ãƒ¼ã®é»’æ ã¨åŒã˜ã‚µã‚¤ã‚º
 	}
 };
 const plane_group2 = { 
 	"plane1":{ 
 		"moedl_group":model_group2, 
-		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1‚Åƒ}[ƒJ[‚Ì•˜g‚Æ“¯‚¶ƒTƒCƒY
+		"position":{ "x":0.0, "y":0.1, "z":0.1 }, 
+		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1ã§ãƒãƒ¼ã‚«ãƒ¼ã®é»’æ ã¨åŒã˜ã‚µã‚¤ã‚º
 	}
 };
-//ˆê‚Â‚ÌƒAƒvƒŠã‚É•\¦‚·‚éƒ}[ƒJ[‚ÌƒOƒ‹[ƒv
+//ä¸€ã¤ã®ã‚¢ãƒ—ãƒªä¸Šã«è¡¨ç¤ºã™ã‚‹ãƒãƒ¼ã‚«ãƒ¼ã®ã‚°ãƒ«ãƒ¼ãƒ—
 const marker_group = { 
 	"marker1":{ "plane_group":plane_group1, "id":"qr" }, 
 	"marker2":{ "plane_group":plane_group2, "id":"logo" }, 
 };
 
+
+//ãƒ•ã‚©ãƒ³ãƒˆ
+//http://gero3.github.io/facetype.js/
+
 //////////////////////////////////////////////////////////////////////
-//ªİ’è€–Ú
+//â†‘è¨­å®šé …ç›®
 //////////////////////////////////////////////////////////////////////
 
 window.onload = function(){
-	//ƒJƒƒ‰‚Ìæ“¾
-	//¦a-marker-camera‚Íƒ}[ƒJ[‚ªƒJƒƒ‰‚©‚çŠO‚ê‚½Œã‚à•\¦‚ªc‚é‚Ì‚Å’ˆÓ
+	//ã‚«ãƒ¡ãƒ©ã®å–å¾—
+	//â€»a-marker-cameraã¯ãƒãƒ¼ã‚«ãƒ¼ãŒã‚«ãƒ¡ãƒ©ã‹ã‚‰å¤–ã‚ŒãŸå¾Œã‚‚è¡¨ç¤ºãŒæ®‹ã‚‹ã®ã§æ³¨æ„
 	//let camera = document.querySelector("a-entity[camera]");
 	//if(!camera){ camera = document.querySelector("a-marker-camera"); }
 	//camera = camera.components.camera.camera;
 
-	//ƒ}[ƒJ[
+	//ãƒãƒ¼ã‚«ãƒ¼
 	let markers = [];
 
-	//ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ¨Pixi‚Ìİ’è¨A-Frame‚Ìİ’èA‚Ì‡”Ô‚Éˆ—‚·‚é
-	//¦‘O’i‚Ìˆ—‚ªI‚í‚é‚Ü‚ÅŒã’i‚Ìˆ—‚ÍPromise‚Å‘Ò‚½‚¹‚é
+	//ãƒ¢ãƒ‡ãƒ«ã®èª­ã¿è¾¼ã¿â†’Pixiã®è¨­å®šâ†’A-Frameã®è¨­å®šã€ã®é †ç•ªã«å‡¦ç†ã™ã‚‹
+	//â€»å‰æ®µã®å‡¦ç†ãŒçµ‚ã‚ã‚‹ã¾ã§å¾Œæ®µã®å‡¦ç†ã¯Promiseã§å¾…ãŸã›ã‚‹
 	loadModels().then(setupPixi).then(setupAFrame);
 
 	function loadModels(){
@@ -120,7 +124,7 @@ window.onload = function(){
 		const animation = LIVE2DCUBISMFRAMEWORK.Animation;
 		const override = LIVE2DCUBISMFRAMEWORK.BuiltinAnimationBlenders.OVERRIDE;
 
-		//’Êí‚ÉÄ¶‚·‚éƒ‚[ƒVƒ‡ƒ“‚Ìİ’è
+		//é€šå¸¸æ™‚ã«å†ç”Ÿã™ã‚‹ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®è¨­å®š
 		const setNormalMotion = function(model, resources, normal_motion){
 			let motions = [];
 			for(let i in normal_motion){ 
@@ -133,15 +137,15 @@ window.onload = function(){
 			const rand = Math.floor(Math.random() * model.motions.length);
 			model.animator.getLayer("motion").play(model.motions[rand]);
 		}
-		//ƒNƒŠƒbƒN‚ÉÄ¶‚·‚éƒ‚[ƒVƒ‡ƒ“‚Ìİ’è
+		//ã‚¯ãƒªãƒƒã‚¯æ™‚ã«å†ç”Ÿã™ã‚‹ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®è¨­å®š
 		const setClickMotion = function(model, resources, click_motion){
-			//¦‰¼À‘•BÅ‰‚Ìƒ‚[ƒVƒ‡ƒ“‚ÅŒˆ‚ß‘Å‚¿
+			//â€»ä»®å®Ÿè£…ã€‚æœ€åˆã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã§æ±ºã‚æ‰“ã¡
 			const data = resources[click_motion[0]].data;
 			model.click_motion = animation.fromMotion3Json(data);
 		}
-		//‹ü’Ç]—p‚Ìƒ‚[ƒVƒ‡ƒ“‚Ìİ’è
+		//è¦–ç·šè¿½å¾“ç”¨ã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®è¨­å®š
 		const setGazeMotion = function(model, resources, normal_motion){
-			//¦“K“–‚Èƒ‚[ƒVƒ‡ƒ“ƒf[ƒ^‚Ì•s—v‚È•Ï”‚ğ‹ó‚É‚µ‚ÄA‹ü’Ç]—p‚Ìƒ‚[ƒVƒ‡ƒ“ƒf[ƒ^‚ğì‚é
+			//â€»é©å½“ãªãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã®ä¸è¦ãªå¤‰æ•°ã‚’ç©ºã«ã—ã¦ã€è¦–ç·šè¿½å¾“ç”¨ã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ä½œã‚‹
 			let data = resources[normal_motion[0]].data;
 			data.CurveCount = data.TotalPointCount = data.TotalSegmentCount = 0;
 			data.Curves = [];
@@ -149,28 +153,28 @@ window.onload = function(){
 			model.animator.addLayer("gaze", override, 1);
 			model.animator.getLayer("gaze").play(gaze_motion);
 
-			//‹ü’Ç]ƒ‚[ƒVƒ‡ƒ“‚Ìƒpƒ‰ƒ[ƒ^’lXV
+			//è¦–ç·šè¿½å¾“ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤æ›´æ–°
 			model.gaze = new THREE.Vector3();
 			const ids = model.parameters.ids;
-			//¦2Œn‚Æ3Œn‚É‘Î‰‚·‚é‚½‚ßmax‚ğæ‚éBŠY“–‚µ‚È‚¢ƒo[ƒWƒ‡ƒ“‚ÌindexOf‚Í-1‚ğ•Ô‚·
-			//¦ƒpƒ‰ƒ[ƒ^©‘Ì‚ª–³‚¢ê‡‚ÍƒGƒ‰[‚É‚È‚é‚Ì‚Å’ˆÓ
+			//â€»2ç³»ã¨3ç³»ã«å¯¾å¿œã™ã‚‹ãŸã‚maxã‚’å–ã‚‹ã€‚è©²å½“ã—ãªã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®indexOfã¯-1ã‚’è¿”ã™
+			//â€»ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è‡ªä½“ãŒç„¡ã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹ã®ã§æ³¨æ„
 			const angle_x = Math.max(ids.indexOf("ParamAngleX"), ids.indexOf("PARAM_ANGLE_X"));
 			const angle_y = Math.max(ids.indexOf("ParamAngleY"), ids.indexOf("PARAM_ANGLE_Y"));
 			const eye_x = Math.max(ids.indexOf("ParamEyeBallX"), ids.indexOf("PARAM_EYE_BALL_X"));
 			const eye_y = Math.max(ids.indexOf("ParamEyeBallY"), ids.indexOf("PARAM_EYE_BALL_Y"));
 			gaze_motion.evaluate = (time, weight, blend, target, stackFlags, groups) => {
-				//¦‚’¼ƒ‚[ƒh‚Ì‚Æ‚«‚Íc•ûŒü‚Å‘å‚«‚¢’l‚ªæ‚ê‚é‚Ì‚Å’²®‚·‚é
+				//â€»å‚ç›´ãƒ¢ãƒ¼ãƒ‰ã®ã¨ãã¯ç¸¦æ–¹å‘ã§å¤§ãã„å€¤ãŒå–ã‚Œã‚‹ã®ã§èª¿æ•´ã™ã‚‹
 				if(stand_mode){ model.gaze.y *= 0.1; }
-				//ƒpƒ‰ƒ[ƒ^‚ÌŒ»İ’lAÅ‘å’lAÅ¬’l
+				//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ç¾åœ¨å€¤ã€æœ€å¤§å€¤ã€æœ€å°å€¤
 				const values = target.parameters.values;
 				const max = target.parameters.maximumValues;
 				const min = target.parameters.minimumValues;
-				//‹ü‚Ìc•ûŒüA‰¡•ûŒü‚»‚ê‚¼‚ê³‚È‚çÅ‘å’l‘¤A•‰‚È‚çÅ¬’l‘¤‚©‚ç’l‚ğæ“¾‚·‚é
+				//è¦–ç·šã®ç¸¦æ–¹å‘ã€æ¨ªæ–¹å‘ãã‚Œãã‚Œæ­£ãªã‚‰æœ€å¤§å€¤å´ã€è² ãªã‚‰æœ€å°å€¤å´ã‹ã‚‰å€¤ã‚’å–å¾—ã™ã‚‹
 				const angle_h = model.gaze.x > 0 ? max[angle_x] : -min[angle_x];
 				const angle_v = model.gaze.y > 0 ? max[angle_y] : -min[angle_y];
 				const eye_h = model.gaze.x > 0 ? max[eye_x] : -min[eye_x];
 				const eye_v = model.gaze.y > 0 ? max[eye_y] : -min[eye_y];
-				//ÅI“I‚Èƒpƒ‰ƒ[ƒ^’l‚ğŒvZ‚·‚é
+				//æœ€çµ‚çš„ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤ã‚’è¨ˆç®—ã™ã‚‹
 				values[angle_x] = blend(values[angle_x], model.gaze.x * angle_h, 0, weight);
 				values[angle_y] = blend(values[angle_y], model.gaze.y * angle_v, 0, weight);
 				values[eye_x] = blend(values[eye_x], model.gaze.x * eye_h, 0, weight);
@@ -178,19 +182,19 @@ window.onload = function(){
 			}
 		}
 
-		//ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
+		//ãƒ¢ãƒ‡ãƒ«ã®èª­ã¿è¾¼ã¿
 		const loadModel = function(config, models){
 			let p = new Promise(function(resolve, reject){
 				const loader = new PIXI.loaders.Loader();
-				//model3.json‚ÌƒL[‚ÆƒpƒX‚ğ’Ç‰Á
+				//model3.jsonã®ã‚­ãƒ¼ã¨ãƒ‘ã‚¹ã‚’è¿½åŠ 
 				const model_key = Object.keys(config["model"])[0];
 				loader.add(model_key, config["model"][model_key], xhrType);
-				//motion3.json‚ÌƒL[‚ÆƒpƒX‚ğ’Ç‰Á
+				//motion3.jsonã®ã‚­ãƒ¼ã¨ãƒ‘ã‚¹ã‚’è¿½åŠ 
 				for(let key in config["motion"]){ loader.add(key, config["motion"][key], xhrType); }
 
-				//ƒŠƒ\[ƒX‚Ì“Ç‚İ‚İ
+				//ãƒªã‚½ãƒ¼ã‚¹ã®èª­ã¿è¾¼ã¿
 				const loadResources = function(loader, resources){
-					//ƒ‚[ƒVƒ‡ƒ“‚Ìİ’è
+					//ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®è¨­å®š
 					const setMotion = function(model){ 
 						if(model == null){ reject(); }
 
@@ -198,7 +202,7 @@ window.onload = function(){
 						setClickMotion(model, resources, config["click_motion"]);
 						setGazeMotion(model, resources, config["normal_motion"]);
 
-						//ƒ‚ƒfƒ‹‚ÌˆÊ’uAƒTƒCƒY
+						//ãƒ¢ãƒ‡ãƒ«ã®ä½ç½®ã€ã‚µã‚¤ã‚º
 						model.position_x = config["position"]["x"];
 						model.position_y = config["position"]["y"];
 						model.scale_x = config["scale"]["w"];
@@ -207,7 +211,7 @@ window.onload = function(){
 
 						resolve();
 					}
-					//ƒ‚ƒfƒ‹‚Ì\’z
+					//ãƒ¢ãƒ‡ãƒ«ã®æ§‹ç¯‰
 					const builder = new LIVE2DCUBISMPIXI.ModelBuilder();
 					builder.buildFromModel3Json(loader, resources[model_key], setMotion);
 				}
@@ -217,18 +221,18 @@ window.onload = function(){
 		}
 
 		let p = [];
-		//ƒ}[ƒJ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		//ãƒãƒ¼ã‚«ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		for(marker_key in marker_group){
 			let marker = marker_group[marker_key];
 			let planes = [];
-			//ƒvƒŒ[ƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+			//ãƒ—ãƒ¬ãƒ¼ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 			for(plane_key in marker["plane_group"]){
 				let plane = marker["plane_group"][plane_key];
 				let models = [];
-				//ƒ‚ƒfƒ‹‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+				//ãƒ¢ãƒ‡ãƒ«ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 				for(model_key in plane["moedl_group"]){
 					let model = plane["moedl_group"][model_key];
-					//ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
+					//ãƒ¢ãƒ‡ãƒ«ã®èª­ã¿è¾¼ã¿
 					p.push(loadModel(model, models));
 				}
 				models.position_x = plane["position"]["x"];
@@ -243,7 +247,7 @@ window.onload = function(){
 		}
 		return Promise.all(p);
 	}
-	//Pixi‚Ìİ’è
+	//Pixiã®è¨­å®š
 	function setupPixi(){
 		let p = new Promise(function(resolve, reject){
 			markers.forEach(function(marker){
@@ -253,20 +257,20 @@ window.onload = function(){
 					plane.app = new PIXI.Application(0, 0, option);
 					plane.app.stage.renderable = false;
 
-					//app‚Éƒ‚ƒfƒ‹‚ğ•R•t‚¯
+					//appã«ãƒ¢ãƒ‡ãƒ«ã‚’ç´ä»˜ã‘
 					plane.forEach(function(model){
 						plane.app.stage.addChild(model);
 						plane.app.stage.addChild(model.masks);
 					});
 
-					//XVˆ—
+					//æ›´æ–°å‡¦ç†
 					const ticker = function(delta_time){
 						plane.forEach(function(model){
 							model.update(delta_time);
 							model.masks.update(plane.app.renderer);
 						});
 					}
-					//app‚ÉXVˆ—‚ğ•R•t‚¯
+					//appã«æ›´æ–°å‡¦ç†ã‚’ç´ä»˜ã‘
 					plane.app.ticker.add(ticker);
 				});
 			});
@@ -274,69 +278,98 @@ window.onload = function(){
 		});
 		return Promise.all([p]);
 	}
-	//DOM‚Ìİ’è
+	//DOMã®è¨­å®š
 	function setupDOM(){
 		markers.forEach(function(marker){
-			//ƒ}[ƒJ[‚Ìì¬
+			//ãƒãƒ¼ã‚«ãƒ¼ã®ä½œæˆ
 			const id = marker.id;
 			let markerEl = document.querySelector("a-marker#" + id);
 			if(!markerEl){ markerEl = document.querySelector("a-marker-camera#" + id); }
 
 			marker.forEach(function(plane){
-				//ƒvƒŒ[ƒ“‚Ìì¬
+				//ç›´ç«‹ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãŸã‚‰Xè»¸ã‚’-90åº¦å›è»¢
+				const stand = stand_mode ? "0 0 0" : "-90 0 0";
+
+				//ãƒ—ãƒ¬ãƒ¼ãƒ³ã®ä½œæˆ
 				let planeEl = document.createElement("a-plane");
 				planeEl.setAttribute("plane", "");
 				planeEl.setAttribute("color", "#000");
 				planeEl.setAttribute("width", plane.scale_w);
 				planeEl.setAttribute("height", plane.scale_h);
-				//ƒ}[ƒJ[‚ğŠî€‚É‚µ‚½ƒ‚ƒfƒ‹‚Ì‘Š‘ÎˆÊ’u‚Ìw’è
+				//ãƒãƒ¼ã‚«ãƒ¼ã‚’åŸºæº–ã«ã—ãŸãƒ¢ãƒ‡ãƒ«ã®ç›¸å¯¾ä½ç½®ã®æŒ‡å®š
 				let position = plane.position_x + " " + plane.position_y + " " +plane.position_z;
 				planeEl.setAttribute("position", position);
-				//’¼—§ƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚çX²‚ğ-90“x‰ñ“]
-				const stand = stand_mode ? "0 0 0" : "-90 0 0";
 				planeEl.setAttribute("rotation", stand);
 
-				//³–Ê•ûŒü‚Ì”»’è—pƒIƒuƒWƒFƒNƒg‚Ìì¬
+				//æ­£é¢æ–¹å‘ã®åˆ¤å®šç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆ
 				planeEl.object3D.front = new THREE.Object3D();
 				planeEl.object3D.front.position.set(0, 0, -1);
 				planeEl.object3D.add(planeEl.object3D.front);
 
-				//ƒ}[ƒJ[‚ÉƒvƒŒ[ƒ“‚ğ•R•t‚¯
+				//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
+				let message_position = "0 -0.5 0.1";
+				let message_size = 1.0;
+				let message_width = 512;
+				let message_height = 256;
+				let message_font_size = 50;
+				let message_margin_x = 10;
+				let message_margin_y = 10  + message_font_size;
+				let message_draw = "width: " + message_width + "; height: " + message_height + "; background: #FFF";
+				let messageEl = document.createElement("a-plane");
+				messageEl.setAttribute("position", message_position);
+				messageEl.setAttribute("width", message_size);
+				messageEl.setAttribute("height", message_size * (message_height / message_width));
+				messageEl.setAttribute("draw", message_draw);
+				messageEl.config = "x: " + message_margin_x + "; y: " + message_margin_y + "; ";
+				messageEl.config += "width: 200; lineHeight: " + message_margin_y + "; ";
+				messageEl.config += "color: #FFF; strokeStyle: #000; lineWidth: 6; font: " + message_font_size + "px GenJyuuGothicX; text: ";
+				messageEl.text = "ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã®ä¸–ç•ŒãŒåºƒãŒã‚Šã¾ã™ã€‚";
+				//ãƒ—ãƒ¬ãƒ¼ãƒ³ã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç´ä»˜ã‘
+				planeEl.message = messageEl;
+				planeEl.appendChild(messageEl);
+
+				//ãƒãƒ¼ã‚«ãƒ¼ã«ãƒ—ãƒ¬ãƒ¼ãƒ³ã‚’ç´ä»˜ã‘
 				markerEl.appendChild(planeEl);
-				//ƒvƒŒ[ƒ““¯m‚ğ•R•t‚¯
+				//ãƒ—ãƒ¬ãƒ¼ãƒ³åŒå£«ã‚’ç´ä»˜ã‘
 				planeEl.plane = plane;
-				//ƒvƒŒ[ƒ“‚Éƒ}[ƒJ[‚ğ•R•t‚¯
+				//ãƒ—ãƒ¬ãƒ¼ãƒ³ã«ãƒãƒ¼ã‚«ãƒ¼ã‚’ç´ä»˜ã‘
 				planeEl.marker = markerEl;
 			});
 		});
 	}
-	//A-Frame‚Ìİ’è
+	//A-Frameã®è¨­å®š
 	function setupAFrame(){
-		//DOM‚Ìİ’è
+		//DOMã®è¨­å®š
 		setupDOM();
 
-		//ƒRƒ“ƒ|[ƒlƒ“ƒg‚ª‰Šú‰»‚³‚ê‚é‚ÆŒÄ‚Î‚ê‚éˆ—
+		//ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒåˆæœŸåŒ–ã•ã‚Œã‚‹ã¨å‘¼ã°ã‚Œã‚‹å‡¦ç†
 		const init = function(){
+			let scene = this.el.sceneEl;
 			let plane = this.el.plane;
-			//ƒeƒNƒXƒ`ƒƒ‚Ìì¬
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ä½œæˆ
 			let texture = new THREE.Texture(plane.app.view);
 			texture.premultiplyAlpha = true;
-			//ƒ}ƒeƒŠƒAƒ‹‚Ìì¬
-			let material = new THREE.MeshStandardMaterial({});
+			//ãƒãƒ†ãƒªã‚¢ãƒ«ã®ä½œæˆ
+			let material = new THREE.MeshBasicMaterial({});
 			material.map = texture;
-			material.metalness = 0;
+			material.fog = false;
+			material.flatShading = true;
+			material.lights = false;
 			material.premultipliedAlpha = true;
 			material.transparent = true;
-			//ƒƒbƒVƒ…‚Ì•R•t‚¯
+
+			//ãƒ¡ãƒƒã‚·ãƒ¥ã®ç´ä»˜ã‘
 			mesh = this.el.getObject3D("mesh");
 			mesh.material = material;
-			//ƒ‚ƒfƒ‹‚Ì•\¦‚ªd‚È‚éê‡‚ğ‘z’è‚µ‚ÄƒfƒvƒX‚ğƒNƒŠƒA‚µ‚Ä‚¨‚­
+
+			//ãƒ¢ãƒ‡ãƒ«ã®è¡¨ç¤ºãŒé‡ãªã‚‹å ´åˆã‚’æƒ³å®šã—ã¦ãƒ‡ãƒ—ã‚¹ã‚’ã‚¯ãƒªã‚¢ã—ã¦ãŠã
 			mesh.renderOrder = 999;
-			mesh.onBeforeRender = function(renderer){ renderer.clearDepth(); }
+			//mesh.onBeforeRender = function(renderer){ renderer.clearDepth(); }
+			mesh.onAfterRender = function(renderer){ renderer.clearDepth(); }
 			plane.mesh = mesh;
 		}
-		//ƒRƒ“ƒ|[ƒlƒ“ƒg‚ªXV‚³‚ê‚é‚ÆŒÄ‚Î‚ê‚éˆ—
-		//¦–ˆƒtƒŒ[ƒ€ŒÄ‚Î‚ê‚éˆ—‚Å‚Í‚È‚¢‚Ì‚Å’ˆÓ
+		//ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒæ›´æ–°ã•ã‚Œã‚‹ã¨å‘¼ã°ã‚Œã‚‹å‡¦ç†
+		//â€»æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å‘¼ã°ã‚Œã‚‹å‡¦ç†ã§ã¯ãªã„ã®ã§æ³¨æ„
 		const update = function(){
 			let plane = this.el.plane;
 			plane.app.view.width = texture_width + "px";
@@ -351,12 +384,12 @@ window.onload = function(){
 			});
 			plane.mesh.material.map.needsUpdate = true;
 		}
-		//–ˆƒtƒŒ[ƒ€ŒÄ‚Î‚ê‚éˆ—
+		//æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å‘¼ã°ã‚Œã‚‹å‡¦ç†
 		const tick = function(time, timeDelta){
 			let plane = this.el.plane;
 			let marker = this.el.marker;
 			if(marker.object3D.visible){
-				//‰æ–Ê‚ª‰ñ“]‚µ‚½’¼Œãiƒ‚ƒfƒ‹‚Ì•\¦ˆÊ’u‚ª‚¸‚ê‚Ä‚¢‚éj‚Å‚È‚¢‚È‚ç•`‰æ‚·‚é
+				//ç”»é¢ãŒå›è»¢ã—ãŸç›´å¾Œï¼ˆï¼ãƒ¢ãƒ‡ãƒ«ã®è¡¨ç¤ºä½ç½®ãŒãšã‚Œã¦ã„ã‚‹ï¼‰ã§ãªã„ãªã‚‰æç”»ã™ã‚‹
 				if(!orientationchanged){ plane.app.stage.renderable = true; }
 				plane.mesh.material.map.needsUpdate = true;
 
@@ -364,10 +397,10 @@ window.onload = function(){
 				let gaze = this.el.object3D.front.getWorldPosition();
 				gaze.sub(pos);
 				plane.forEach(function(model){
-					//‹ü’Ç]ƒ‚[ƒVƒ‡ƒ“‚ÌXV
+					//è¦–ç·šè¿½å¾“ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
 					model.gaze = gaze;
 
-					//ƒ‰ƒ“ƒ_ƒ€‚Åƒ‚[ƒVƒ‡ƒ“Ä¶
+					//ãƒ©ãƒ³ãƒ€ãƒ ã§ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
 					let motion = model.animator.getLayer("motion");
 					if(motion && motion.currentTime >= motion.currentAnimation.duration){
 						let rand = Math.floor(Math.random() * model.motions.length);
@@ -375,20 +408,25 @@ window.onload = function(){
 						motion.play(model.motions[rand]);
 					}
 				});
+
+				let message = this.el.message;
+				let text = message.text;
+				message.setAttribute("textwrap", message.config + text);
+
 			}else{
-				//ƒ}[ƒJ[‚ªŠO‚ê‚½‚ç•`‰æ‚ğ~‚ß‚é
+				//ãƒãƒ¼ã‚«ãƒ¼ãŒå¤–ã‚ŒãŸã‚‰æç”»ã‚’æ­¢ã‚ã‚‹
 				plane.app.stage.renderable = false;
-				//ƒ}[ƒJ[‚ªŠO‚ê‚½‚ç‰æ–Ê‚Ì‰ñ“]ƒtƒ‰ƒO‚ğÜ‚é
-				//¨ƒ}[ƒJ[‚ÌÄŒŸo‚Éƒ‚ƒfƒ‹‚Ì•\¦ˆÊ’u‚ªC³‚³‚ê‚é‚½‚ß
+				//ãƒãƒ¼ã‚«ãƒ¼ãŒå¤–ã‚ŒãŸã‚‰ç”»é¢ã®å›è»¢ãƒ•ãƒ©ã‚°ã‚’æŠ˜ã‚‹
+				//â†’ãƒãƒ¼ã‚«ãƒ¼ã®å†æ¤œå‡ºæ™‚ã«ãƒ¢ãƒ‡ãƒ«ã®è¡¨ç¤ºä½ç½®ãŒä¿®æ­£ã•ã‚Œã‚‹ãŸã‚
 				orientationchanged = false;
 			}
 		}
-		//ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì“o˜^
+		//ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ç™»éŒ²
 		AFRAME.registerComponent("plane", { "init":init, "update":update, "tick":tick });
 	}
 
 	const click_event = function(e){
-		//ƒNƒŠƒbƒNƒ‚[ƒVƒ‡ƒ“‚ÌÄ¶
+		//ã‚¯ãƒªãƒƒã‚¯ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿ
 		markers.forEach(function(marker){
 			marker.forEach(function(plane){
 				plane.forEach(function(model){
@@ -401,29 +439,29 @@ window.onload = function(){
 			});
 		});
 	}
-	//PC‚ÆƒXƒ}ƒz‚Ì‘I‘ğƒCƒxƒ“ƒg‚ÌU‚è•ª‚¯
+	//PCã¨ã‚¹ãƒãƒ›ã®é¸æŠã‚¤ãƒ™ãƒ³ãƒˆã®æŒ¯ã‚Šåˆ†ã‘
 	if(window.ontouchstart === undefined){
 		window.onclick = click_event;
 	}else{
 		window.ontouchstart = click_event;
 	}
-	//‰æ–Ê‚Ì‰ñ“]ƒtƒ‰ƒO
-	//TODO:ƒtƒ‰ƒO‚ÍƒvƒŒ[ƒ“‚²‚Æ‚É‚½‚¹‚é•K—v‚ª–³‚¢‚©H
+	//ç”»é¢ã®å›è»¢ãƒ•ãƒ©ã‚°
+	//TODO:ãƒ•ãƒ©ã‚°ã¯ãƒ—ãƒ¬ãƒ¼ãƒ³ã”ã¨ã«æŒãŸã›ã‚‹å¿…è¦ãŒç„¡ã„ã‹ï¼Ÿ
 	let orientationchanged = false;
 	window.onorientationchange = function(e){
 		if(e === void 0){ e = null; }
-		//‰æ–Ê‚ª‰ñ“]‚·‚é‚Æƒ‚ƒfƒ‹‚Ì•\¦ˆÊ’u‚ª‚¸‚ê‚é‚½‚ß•`‰æ‚ğ~‚ß‚é
+		//ç”»é¢ãŒå›è»¢ã™ã‚‹ã¨ãƒ¢ãƒ‡ãƒ«ã®è¡¨ç¤ºä½ç½®ãŒãšã‚Œã‚‹ãŸã‚æç”»ã‚’æ­¢ã‚ã‚‹
 		markers.forEach(function(marker){
 			marker.forEach(function(plane){
 				plane.app.stage.renderable = false;
 			});
 		});
-		//‰æ–Ê‚Ì‰ñ“]ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+		//ç”»é¢ã®å›è»¢ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		orientationchanged = true;
 	}
 }
 
-//FPS‚Ì•\¦
+//FPSã®è¡¨ç¤º
 if(show_fps){
 	let script = document.createElement("script");
 	script.onload = function(){
