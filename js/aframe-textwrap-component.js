@@ -123,7 +123,7 @@
 				ctx.fillStyle = this.data.bg;
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
 			}
-			var textRender = TextRenderGen(ctx,this.data);
+			var textRender = textRenderGen(ctx,this.data);
 
 			ctx.fillStyle = this.data.color;
 			ctx.font = this.data.font;
@@ -132,7 +132,7 @@
 			ctx.direction = this.data.direction;
 			wrapText(ctx, this.data);
 
-			function TextRenderGen(ctx,data){
+			function textRenderGen(ctx,data){
 				return function(text,x,y){
 					if(data.shadowColor){
 						ctx.shadowColor = data.shadowColor;
@@ -151,29 +151,14 @@
 				}
 			}
 
-			//stolen from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
 			function wrapText(context,data) {
-				// This regex replacement is for Chinese(or japanese) can't be break by space like English, 
-				// and English should keep wrap by space properly
-				var words = data.text.replace(/([\u4E00-\u9FCC])|((\w+)\s)/g,`$&\n`).split(/\n/);
+				var words = data.text.split(/\n/);
 				var line = "";
 
 				for (var n = 0; n < words.length; n++) {
-					var testLine = line + words[n];
-					var metrics = context.measureText(testLine);
-					var testWidth = metrics.width;
-console.log(testWidth + " > " + data.width + " && " + n + " > 0");
-
-					if (testWidth > data.width && n > 0) {
-						ctx.fillText(line, data.x, data.y)
-						textRender(line, data.x, data.y);
-						line = words[n];
-						data.y += data.lineHeight;
-					} else {
-						line = testLine;
-					}
+					textRender(words[n], data.x, data.y);
+					data.y += data.lineHeight;
 				}
-				textRender(line, data.x, data.y);
 			}
 		},
 

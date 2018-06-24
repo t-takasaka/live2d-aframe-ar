@@ -307,25 +307,31 @@ window.onload = function(){
 				planeEl.object3D.add(planeEl.object3D.front);
 
 				//メッセージウィンドウの作成
-				let message_position = "0 -0.5 0.1";
-				let message_size = 1.0;
-				let message_width = 512;
-				let message_height = 256;
+				let message_position = "-0.5 -1.0 0.1";
+				let message_geometry_size = 1.0;
+				let message_background = "#FFF";
+				let message_texture_size = 512;
+				let message_texture_aspect = 0.5; // h/w
+				let message_radius = 0.1;
 				let message_font_size = 50;
 				let message_margin_x = 10;
-				let message_margin_y = 10  + message_font_size;
-				let message_draw = "width: " + message_width + "; height: " + message_height + "; background: #FFF";
-				let messageEl = document.createElement("a-plane");
+				let message_margin_y = 10;
+				message_margin_y += (message_texture_size * (1.0 - message_texture_aspect)) + message_font_size;
+				let message_line_height = 10 + message_font_size;
+				let message_draw = "width: " + message_texture_size + "; height: " + message_texture_size + "; background: " + message_background;
+				let messageEl = document.createElement("a-rounded");
 				messageEl.setAttribute("position", message_position);
-				messageEl.setAttribute("width", message_size);
-				messageEl.setAttribute("height", message_size * (message_height / message_width));
+				messageEl.setAttribute("width", message_geometry_size);
+				messageEl.setAttribute("height", message_geometry_size * message_texture_aspect);
+				messageEl.setAttribute("radius", message_radius);
 				messageEl.setAttribute("draw", message_draw);
 				messageEl.config = "x: " + message_margin_x + "; y: " + message_margin_y + "; ";
-				messageEl.config += "width: 200; lineHeight: " + message_margin_y + "; ";
+				messageEl.config += "lineHeight: " + message_line_height + "; ";
 				messageEl.config += "color: #FFF; strokeStyle: #000; lineWidth: 6; font: " + message_font_size + "px GenJyuuGothicX; text: ";
-				messageEl.text = "コンピュータの世界が広がります。";
+				messageEl.text = "コンピュータの\n世界が広がります。";
+				messageEl.setAttribute("textwrap", messageEl.config + messageEl.text);
 				//プレーンにメッセージウィンドウを紐付け
-				planeEl.message = messageEl;
+				planeEl.message= messageEl;
 				planeEl.appendChild(messageEl);
 
 				//マーカーにプレーンを紐付け
@@ -357,16 +363,16 @@ window.onload = function(){
 			material.lights = false;
 			material.premultipliedAlpha = true;
 			material.transparent = true;
-
 			//メッシュの紐付け
 			mesh = this.el.getObject3D("mesh");
 			mesh.material = material;
 
 			//モデルの表示が重なる場合を想定してデプスをクリアしておく
-			mesh.renderOrder = 999;
-			//mesh.onBeforeRender = function(renderer){ renderer.clearDepth(); }
-			mesh.onAfterRender = function(renderer){ renderer.clearDepth(); }
+			mesh.renderOrder = 900;
+			mesh.onBeforeRender = function(renderer){ renderer.clearDepth(); }
 			plane.mesh = mesh;
+
+			scene.renderer.sortObjects = true;
 		}
 		//コンポーネントが更新されると呼ばれる処理
 		//※毎フレーム呼ばれる処理ではないので注意
@@ -409,9 +415,9 @@ window.onload = function(){
 					}
 				});
 
-				let message = this.el.message;
-				let text = message.text;
-				message.setAttribute("textwrap", message.config + text);
+//				let message = this.el.message;
+//				let text = message.text;
+//				message.setAttribute("textwrap", message.config + text);
 
 			}else{
 				//マーカーが外れたら描画を止める
