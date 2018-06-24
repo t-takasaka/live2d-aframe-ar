@@ -55,9 +55,10 @@
 			bottomLeftRadius: {type: 'number', default: -1},
 			bottomRightRadius: {type: 'number', default: -1},
 			color: {type: 'color', default: "#FFF"},
-			opacity: {type: 'number', default: 1},
-			borderSize: {type: 'number', default: 0.01},
+			opacity: {type: 'number', default: 0},
+			borderSize: {type: 'number', default: 0.02},
 			borderColor: {type: 'color', default: "#000"},
+			borderOpacity: {type: 'number', default: 0.3},
 		},
 		init: function () {
 			var material = new THREE.MeshBasicMaterial({});
@@ -65,38 +66,45 @@
 			material.flatShading = true;
 			material.lights = false;
 			material.transparent = true;
+			material.opacity = 0.0;
 			material.color = new THREE.Color(this.data.color);
 
 			this.rounded = new THREE.Mesh(this.draw(0), material);
 			this.rounded.renderOrder = 999;
 			this.rounded.onBeforeRender = function(renderer){ renderer.clearDepth(); }
-			this.updateOpacity();
 			this.el.setObject3D('mesh', this.rounded);
 			material.color = new THREE.Color(this.data.borderColor);
-			var frame = new THREE.Mesh(this.draw(this.data.borderSize), material);
-			frame.renderOrder = 998;
-			frame.onBeforeRender = function(renderer){ renderer.clearDepth(); }
-			this.rounded.add(frame);
+
+			material.opacity = this.data.borderOpacity;
+			material.blending = THREE.CustomBlending;
+			material.blendEquation = THREE.AddEquation;
+			material.blendSrc = THREE.SrcAlphaSaturateFactor;
+			material.blendDst = THREE.OneMinusSrcAlphaFactor;
+
+			var border = new THREE.Mesh(this.draw(this.data.borderSize), material);
+			border.renderOrder = 998;
+			border.onBeforeRender = function(renderer){ renderer.clearDepth(); }
+			this.rounded.add(border);
 		},
 		update: function () {
 			if (this.data.enabled) {
 				if (this.rounded) {
 					this.rounded.visible = true;
-					this.updateOpacity();
+					//this.updateOpacity();
 				}
 			} else {
 				this.rounded.visible = false;
 			}
 		},
 		updateOpacity: function() {
-			if (this.data.opacity < 0) { this.data.opacity = 0; }
-			if (this.data.opacity > 1) { this.data.opacity = 1; }
+			//if (this.data.opacity < 0) { this.data.opacity = 0; }
+			//if (this.data.opacity > 1) { this.data.opacity = 1; }
 			//if (this.data.opacity < 1) {
 			//	this.rounded.material.transparent = true;
 			//} else {
 			//	this.rounded.material.transparent = false;
 			//}
-			this.rounded.material.opacity = this.data.opacity;
+			//this.rounded.material.opacity = this.data.opacity;
 		},
 		tick: function () {},
 			remove: function () {

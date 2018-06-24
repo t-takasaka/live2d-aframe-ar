@@ -307,29 +307,49 @@ window.onload = function(){
 				planeEl.object3D.add(planeEl.object3D.front);
 
 				//メッセージウィンドウの作成
-				let message_position = "-0.5 -1.0 0.1";
-				let message_geometry_size = 1.0;
-				let message_background = "#FFF";
+				let message_window_position = "-0.5 -1.0 0.1";
+				let message_window_radius = 0.1;
+				let message_window_size = 1.0;
+				let message_window_color = "#FFF";
+				let message_window_opacity = 0.9;
 				let message_texture_size = 512;
 				let message_texture_aspect = 0.5; // h/w
-				let message_radius = 0.1;
+				let message_border_size = 0.02;
+				let message_border_color = "#000";
+				let message_text = ["コンピュータの\n世界が広がります。", "１２３\n４５６\n７８９０", ];
+				let message_text_speed = 150; //ms
 				let message_font_size = 50;
-				let message_margin_x = 10;
-				let message_margin_y = 10;
+				let message_font_color = "#FFF";
+				let message_font_type = "GenJyuuGothicX";
+				let message_stroke_size = "10";
+				let message_stroke_color = "#000";
+				let message_margin_x = 20;
+				let message_margin_y = 20;
 				message_margin_y += (message_texture_size * (1.0 - message_texture_aspect)) + message_font_size;
 				let message_line_height = 10 + message_font_size;
-				let message_draw = "width: " + message_texture_size + "; height: " + message_texture_size + "; background: " + message_background;
+				let message_draw = "width: " + message_texture_size + "; ";
+				message_draw += "height: " + message_texture_size + "; ";
+				message_draw += "background: " + message_window_color + "; ";
+				message_draw += "opacity: " + message_window_opacity + "; ";
 				let messageEl = document.createElement("a-rounded");
-				messageEl.setAttribute("position", message_position);
-				messageEl.setAttribute("width", message_geometry_size);
-				messageEl.setAttribute("height", message_geometry_size * message_texture_aspect);
-				messageEl.setAttribute("radius", message_radius);
-				messageEl.setAttribute("draw", message_draw);
 				messageEl.config = "x: " + message_margin_x + "; y: " + message_margin_y + "; ";
 				messageEl.config += "lineHeight: " + message_line_height + "; ";
-				messageEl.config += "color: #FFF; strokeStyle: #000; lineWidth: 6; font: " + message_font_size + "px GenJyuuGothicX; text: ";
-				messageEl.text = "コンピュータの\n世界が広がります。";
-				messageEl.setAttribute("textwrap", messageEl.config + messageEl.text);
+				messageEl.config += "color: " + message_font_color + "; ";
+				messageEl.config += "strokeStyle: " + message_stroke_color + "; ";
+				messageEl.config += "lineWidth: " + message_stroke_size + "; ";
+				messageEl.config += "font: " + message_font_size + "px " + message_font_type + "; text: ";
+				messageEl.text = message_text;
+				messageEl.textSpeed = message_text_speed;
+				messageEl.textCurrent = 0;
+				messageEl.textStartTime = -1;
+				messageEl.setAttribute("position", message_window_position);
+				messageEl.setAttribute("width", message_window_size);
+				messageEl.setAttribute("height", message_window_size * message_texture_aspect);
+				messageEl.setAttribute("radius", message_window_radius);
+				messageEl.setAttribute("borderSize", message_border_size);
+				messageEl.setAttribute("borderColor", message_border_color);
+				messageEl.setAttribute("draw", message_draw);
+				messageEl.setAttribute("textwrap", messageEl.config + "");
 				//プレーンにメッセージウィンドウを紐付け
 				planeEl.message= messageEl;
 				planeEl.appendChild(messageEl);
@@ -415,9 +435,36 @@ window.onload = function(){
 					}
 				});
 
-//				let message = this.el.message;
-//				let text = message.text;
-//				message.setAttribute("textwrap", message.config + text);
+				//メッセージウィンドウの文字送り
+				let message = this.el.message;
+				if(message.text.length > 0){
+					//開始時間を初期化
+					if(message.textStartTime == -1){ message.textStartTime = time; }
+
+					let current = message.textCurrent;
+					//文字列数が上限を超えていたら0に戻す
+					if(current >= message.text.length){ message.textCurrent = current = 0; }
+
+					let text = message.text[current];
+					let text_len = text.length;
+					if(text_len > 0){
+						let delta = time - message.textStartTime;
+						let len = Math.floor(delta / message.textSpeed) + 1;
+						let tmp = text.substr(0, len);
+
+						//改行コードは文字にカウントしない
+						let lf = tmp.match(/\n/g);
+						if(lf){ len += lf.length; }
+						if(len > text_len){ 
+							len = text_len;
+							//次の文字列を表示
+							message.textCurrent++;
+							message.textStartTime = -1;
+						}
+						tmp = text.substr(0, len);
+						message.setAttribute("textwrap", message.config + tmp);
+					}
+				}
 
 			}else{
 				//マーカーが外れたら描画を止める

@@ -72,30 +72,21 @@
 
 	module.exports.component = {
 		schema: {
-			width: {
-				default: 512
-			},
-			height: {
-				default: 512
-			},
-			background: {
-				default: "#FFFFFF"
-			}
+			width: { default: 512 },
+			height: { default: 512 },
+			background: { default: "#FFFFFF" },
+			opacity: { default: 1 },
 		},
-
 		init: function () {
 			this.registers = []; //order of eventing after render
 			this.update();
 		},
-
 		register: function(render) {
 			this.registers.push(render);
 		},
-
 		update: function (oldData) {
 			if (!oldData) this.createCanvas(this.data.width, this.data.height);
 		},
-
 		createCanvas: function (w, h) {
 			var _ = this;
 			var canvas = document.createElement("canvas");
@@ -112,6 +103,7 @@
 			material.flatShading = true;
 			material.lights = false;
 			material.transparent = true;
+			material.opacity = this.data.opacity;
 
 			if(this.el.object3D.children.length > 0) { //backwards compatibility
 				this.el.object3D.children[0].material = material;
@@ -126,7 +118,6 @@
 			});
 			else _.render();
 		},
-
 		render: function() {
 			if(this.registers.length > 0) { //backwards compatibility
 				this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
