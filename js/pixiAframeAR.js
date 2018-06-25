@@ -22,8 +22,8 @@ const texture_rate_inv = 1 / texture_rate;
 //モデルごとの設定
 const koharu = {
 	"model":{ "model3":"assets/Koharu/Koharu.model3.json" }, 
-	"position":{ "x":0.5, "y":0.5 }, //プレーン内の位置。幅・高さともに中央が0.5
-	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0を超えるとモーション次第ではみ出すので注意
+	"position2D":{ "x":0.5, "y":0.5 }, //プレーン内の位置。幅・高さともに中央が0.5
+	"scale2D":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0を超えるとモーション次第ではみ出すので注意
 	"motion":{
 		"motion1":"assets/Koharu/Koharu_01.motion3.json", 
 		"motion2":"assets/Koharu/Koharu_02.motion3.json", 
@@ -40,8 +40,8 @@ const koharu = {
 };
 const haruto = {
 	"model":{ "model3":"assets/Haruto/Haruto.model3.json" }, 
-	"position":{ "x":0.5, "y":0.5 }, //プレーン内の位置。幅・高さともに中央が0.5
-	"scale":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0を超えるとモーション次第ではみ出すので注意
+	"position2D":{ "x":0.5, "y":0.5 }, //プレーン内の位置。幅・高さともに中央が0.5
+	"scale2D":{ "w":0.5 * texture_rate_inv, "h":0.5 }, //1.0を超えるとモーション次第ではみ出すので注意
 	"motion":{
 		"motion1":"assets/Haruto/Haruto_01.motion3.json", 
 		"motion2":"assets/Haruto/Haruto_02.motion3.json", 
@@ -63,8 +63,8 @@ const haruto = {
 //const plane_group = { 
 //	"plane":{ 
 //		"moedl_group":model_group1, 
-//		"position":{ "x":0.0, "y":0.0, "z":0.0 }, 
-//		"size":{ "w": 3 * texture_rate, "h": 3 }, 
+//		"position3D":{ "x":0.0, "y":0.0, "z":0.0 }, 
+//		"scale3D":{ "w": 3 * texture_rate, "h": 3 }, 
 //	}
 //};
 //一つのアプリ上に表示するマーカーのグループ
@@ -80,15 +80,38 @@ const model_group2 = { "haruto":haruto };
 const plane_group1 = { 
 	"plane1":{ 
 		"moedl_group":model_group1, 
-		"position":{ "x":0.0, "y":-0.1, "z":-0.1 }, 
-		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1でマーカーの黒枠と同じサイズ
+		"position3D":{ "x": 0.0, "y": -0.1, "z": -0.1 }, 
+		"scale3D":{ "w": 3 * texture_rate, "h": 3 }, //1でマーカーの黒枠と同じサイズ
+		"message":{
+			"window_position": "-0.6 -1.0 0.1", 
+			"window_radius": 0.1, 
+			"window_size": 1.2, 
+			"window_color": "#FFF", 
+			"window_opacity": 0.9, 
+			"texture_size": 512, 
+			"texture_aspect": 0.5,  // hight/width
+			"border_size": 0.02, 
+			"text": ["メッセージウィンドウの\nサンプルプログラムです。\nタップで次に進みます。", 
+				"ウィンドウやフォント、\nテキストスピードなど\n諸々変更可能です。", 
+				"フォントは使用文字だけ\nサブセット化すれば、\n容量を軽くできます。",
+				], 
+			"text_speed": 150, //ms
+			"font_size": 40, 
+			"font_color": "#FFF", 
+			"font_type": "GenJyuuGothicX", 
+			"stroke_size": "10", 
+			"stroke_color": "#000", 
+			"margin_x": 20, 
+			"margin_y": 20, 
+			"line_height": 20, 
+		},
 	}
 };
 const plane_group2 = { 
 	"plane1":{ 
 		"moedl_group":model_group2, 
-		"position":{ "x":0.0, "y":0.1, "z":0.1 }, 
-		"scale":{ "w": 3 * texture_rate, "h": 3 }, //1でマーカーの黒枠と同じサイズ
+		"position3D":{ "x":0.0, "y":0.1, "z":0.1 }, 
+		"scale3D":{ "w": 3 * texture_rate, "h": 3 }, //1でマーカーの黒枠と同じサイズ
 	}
 };
 //一つのアプリ上に表示するマーカーのグループ
@@ -105,12 +128,15 @@ const marker_group = {
 //↑設定項目
 //////////////////////////////////////////////////////////////////////
 
+let detector;
+let context;
+
 window.onload = function(){
 	//カメラの取得
 	//※a-marker-cameraはマーカーがカメラから外れた後も表示が残るので注意
-	//let camera = document.querySelector("a-entity[camera]");
-	//if(!camera){ camera = document.querySelector("a-marker-camera"); }
-	//camera = camera.components.camera.camera;
+	let camera = document.querySelector("a-entity[camera]");
+	if(!camera){ camera = document.querySelector("a-marker-camera"); }
+	camera = camera.components.camera.camera;
 
 	//マーカー
 	let markers = [];
@@ -201,12 +227,9 @@ window.onload = function(){
 						setNormalMotion(model, resources, config["normal_motion"]);
 						setClickMotion(model, resources, config["click_motion"]);
 						setGazeMotion(model, resources, config["normal_motion"]);
-
 						//モデルの位置、サイズ
-						model.position_x = config["position"]["x"];
-						model.position_y = config["position"]["y"];
-						model.scale_x = config["scale"]["w"];
-						model.scale_y = config["scale"]["h"];
+						model.position2D = config["position2D"];
+						model.scale2D = config["scale2D"];
 						models.push(model);
 
 						resolve();
@@ -235,11 +258,9 @@ window.onload = function(){
 					//モデルの読み込み
 					p.push(loadModel(model, models));
 				}
-				models.position_x = plane["position"]["x"];
-				models.position_y = plane["position"]["y"];
-				models.position_z = plane["position"]["z"];
-				models.scale_w = plane["scale"]["w"];
-				models.scale_h = plane["scale"]["h"];
+				models.position3D = plane["position3D"];
+				models.scale3D = plane["scale3D"];
+				if(plane["message"]){ models.message = plane["message"]; }
 				planes.push(models);
 			}
 			planes.id = marker["id"];
@@ -294,11 +315,11 @@ window.onload = function(){
 				let planeEl = document.createElement("a-plane");
 				planeEl.setAttribute("plane", "");
 				planeEl.setAttribute("color", "#000");
-				planeEl.setAttribute("width", plane.scale_w);
-				planeEl.setAttribute("height", plane.scale_h);
+				planeEl.setAttribute("width", plane.scale3D["w"]);
+				planeEl.setAttribute("height", plane.scale3D["h"]);
 				//マーカーを基準にしたモデルの相対位置の指定
-				let position = plane.position_x + " " + plane.position_y + " " +plane.position_z;
-				planeEl.setAttribute("position", position);
+				let position3D = plane.position3D["x"] + " " + plane.position3D["y"] + " " + plane.position3D["z"];
+				planeEl.setAttribute("position", position3D);
 				planeEl.setAttribute("rotation", stand);
 
 				//正面方向の判定用オブジェクトの作成
@@ -306,53 +327,42 @@ window.onload = function(){
 				planeEl.object3D.front.position.set(0, 0, -1);
 				planeEl.object3D.add(planeEl.object3D.front);
 
-				//メッセージウィンドウの作成
-				let message_window_position = "-0.5 -1.0 0.1";
-				let message_window_radius = 0.1;
-				let message_window_size = 1.0;
-				let message_window_color = "#FFF";
-				let message_window_opacity = 0.9;
-				let message_texture_size = 512;
-				let message_texture_aspect = 0.5; // h/w
-				let message_border_size = 0.02;
-				let message_border_color = "#000";
-				let message_text = ["コンピュータの\n世界が広がります。", "１２３\n４５６\n７８９０", ];
-				let message_text_speed = 150; //ms
-				let message_font_size = 50;
-				let message_font_color = "#FFF";
-				let message_font_type = "GenJyuuGothicX";
-				let message_stroke_size = "10";
-				let message_stroke_color = "#000";
-				let message_margin_x = 20;
-				let message_margin_y = 20;
-				message_margin_y += (message_texture_size * (1.0 - message_texture_aspect)) + message_font_size;
-				let message_line_height = 10 + message_font_size;
-				let message_draw = "width: " + message_texture_size + "; ";
-				message_draw += "height: " + message_texture_size + "; ";
-				message_draw += "background: " + message_window_color + "; ";
-				message_draw += "opacity: " + message_window_opacity + "; ";
-				let messageEl = document.createElement("a-rounded");
-				messageEl.config = "x: " + message_margin_x + "; y: " + message_margin_y + "; ";
-				messageEl.config += "lineHeight: " + message_line_height + "; ";
-				messageEl.config += "color: " + message_font_color + "; ";
-				messageEl.config += "strokeStyle: " + message_stroke_color + "; ";
-				messageEl.config += "lineWidth: " + message_stroke_size + "; ";
-				messageEl.config += "font: " + message_font_size + "px " + message_font_type + "; text: ";
-				messageEl.text = message_text;
-				messageEl.textSpeed = message_text_speed;
-				messageEl.textCurrent = 0;
-				messageEl.textStartTime = -1;
-				messageEl.setAttribute("position", message_window_position);
-				messageEl.setAttribute("width", message_window_size);
-				messageEl.setAttribute("height", message_window_size * message_texture_aspect);
-				messageEl.setAttribute("radius", message_window_radius);
-				messageEl.setAttribute("borderSize", message_border_size);
-				messageEl.setAttribute("borderColor", message_border_color);
-				messageEl.setAttribute("draw", message_draw);
-				messageEl.setAttribute("textwrap", messageEl.config + "");
-				//プレーンにメッセージウィンドウを紐付け
-				planeEl.message= messageEl;
-				planeEl.appendChild(messageEl);
+				if(plane.message){
+					//テキストの縦の開始位置
+					let margin_y = plane.message["margin_y"] + plane.message["font_size"];
+					margin_y += (plane.message["texture_size"] * (1.0 - plane.message["texture_aspect"]));
+					//テキストの縦の文字幅
+					let line_height = plane.message["line_height"] + plane.message["font_size"];
+					//ウィンドウの描画設定
+					let draw = "width: " + plane.message["texture_size"] + "; height: " + plane.message["texture_size"] + "; ";
+					draw += "background: " + plane.message["window_color"] + "; opacity: " + plane.message["window_opacity"] + "; ";
+					draw += "uvAdj: " + plane.message["window_size"] + "; ";
+
+					//ウィンドウの作成
+					let messageEl = document.createElement("a-rounded");
+					let config = "x: " + plane.message["margin_x"] + "; y: " + margin_y + "; ";
+					config += "lineHeight: " + line_height + "; ";
+					config += "color: " + plane.message["font_color"] + "; ";
+					config += "strokeStyle: " + plane.message["stroke_color"] + "; ";
+					config += "lineWidth: " + plane.message["stroke_size"] + "; ";
+					config += "font: " + plane.message["font_size"] + "px " + plane.message["font_type"] + "; text: ";
+					plane.message["config"] = config;
+
+					plane.message["text_current"] = 0;
+					plane.message["text_start_time"] = -1;
+					plane.message["text_play"] = true;
+
+					messageEl.setAttribute("position", plane.message["window_position"]);
+					messageEl.setAttribute("width", plane.message["window_size"]);
+					messageEl.setAttribute("height", plane.message["window_size"] * plane.message["texture_aspect"]);
+					messageEl.setAttribute("radius", plane.message["window_radius"]);
+					messageEl.setAttribute("borderSize", plane.message["border_size"]);
+					messageEl.setAttribute("draw", draw);
+					messageEl.setAttribute("textwrap", plane.message["config"] + "");
+					//プレーンにウィンドウを紐付け
+					planeEl.message= messageEl;
+					planeEl.appendChild(messageEl);
+				}
 
 				//マーカーにプレーンを紐付け
 				markerEl.appendChild(planeEl);
@@ -404,8 +414,8 @@ window.onload = function(){
 
 			const w = texture_width, h = texture_height;
 			plane.forEach(function(model){
-				model.position = new PIXI.Point(w * model.position_x, h * model.position_y);
-				model.scale = new PIXI.Point(w * model.scale_x, h * model.scale_y);
+				model.position = new PIXI.Point(w * model.position2D["x"], h * model.position2D["y"]);
+				model.scale = new PIXI.Point(w * model.scale2D["w"], h * model.scale2D["h"]);
 				model.masks.resize(plane.app.view.width, plane.app.view.height);
 			});
 			plane.mesh.material.map.needsUpdate = true;
@@ -435,21 +445,21 @@ window.onload = function(){
 					}
 				});
 
-				//メッセージウィンドウの文字送り
-				let message = this.el.message;
-				if(message.text.length > 0){
+				//テキストの文字送り
+				let message = plane.message;
+				if(message && message["text_play"] && (message["text"].length > 0)){
 					//開始時間を初期化
-					if(message.textStartTime == -1){ message.textStartTime = time; }
+					if(message["text_start_time"] == -1){ message["text_start_time"] = time; }
 
-					let current = message.textCurrent;
+					let current = message["text_current"];
 					//文字列数が上限を超えていたら0に戻す
-					if(current >= message.text.length){ message.textCurrent = current = 0; }
+					if(current >= message["text"].length){ message["text_current"] = current = 0; }
 
-					let text = message.text[current];
+					let text = message["text"][current];
 					let text_len = text.length;
 					if(text_len > 0){
-						let delta = time - message.textStartTime;
-						let len = Math.floor(delta / message.textSpeed) + 1;
+						let delta = time - message["text_start_time"];
+						let len = Math.floor(delta / message["text_speed"]) + 1;
 						let tmp = text.substr(0, len);
 
 						//改行コードは文字にカウントしない
@@ -457,12 +467,13 @@ window.onload = function(){
 						if(lf){ len += lf.length; }
 						if(len > text_len){ 
 							len = text_len;
-							//次の文字列を表示
-							message.textCurrent++;
-							message.textStartTime = -1;
+							//次のテキストを表示
+							message["text_current"]++;
+							message["text_start_time"] = -1;
+							message["text_play"] = false;
 						}
 						tmp = text.substr(0, len);
-						message.setAttribute("textwrap", message.config + tmp);
+						this.el.message.setAttribute("textwrap", message["config"] + tmp);
 					}
 				}
 
@@ -478,10 +489,11 @@ window.onload = function(){
 		AFRAME.registerComponent("plane", { "init":init, "update":update, "tick":tick });
 	}
 
+	//クリックイベント
 	const click_event = function(e){
-		//クリックモーションの再生
 		markers.forEach(function(marker){
 			marker.forEach(function(plane){
+				//モーションの再生
 				plane.forEach(function(model){
 					let motion = model.animator.getLayer("motion");
 					if(motion && model.click_motion){
@@ -489,6 +501,11 @@ window.onload = function(){
 						motion.play(model.click_motion);
 					}
 				});
+				//テキストが文末に来ていたら、次のテキストを表示
+				let message = plane.message;
+				if(message && !message["text_play"]){ 
+					message["text_play"] = true; 
+				}
 			});
 		});
 	}
