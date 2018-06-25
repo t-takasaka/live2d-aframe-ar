@@ -3,6 +3,9 @@
 	        <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
 		<script src="https://rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.0/pixi.js"></script>
+		<script src="js/aframe-rounded-component.js"></script>
+		<script src="js/aframe-draw-component.js"></script>
+		<script src="js/aframe-textwrap-component.js"></script>
 
 		<!--By including below library in your project you agree to http://live2d.com/eula/live2d-proprietary-software-license-agreement_en.html-->
 		<script src="https://s3-ap-northeast-1.amazonaws.com/cubism3.live2d.com/sdk/js_eap/live2dcubismcore.min.js"></script>
@@ -10,10 +13,17 @@
 		<script src="https://rawgit.com/Live2D/CubismJsComponents/master/example/wwwroot/js/live2dcubismframework.js"></script>
 		<script src="https://rawgit.com/Live2D/CubismJsComponents/master/example/wwwroot/js/live2dcubismpixi.js"></script>
 		<script src="js/pixiAframeAR.js"></script>
+		<style type="text/css">
+			@font-face {
+				font-family: "GenJyuuGothicX";
+				src: url('font/GenJyuuGothicX.woff2') format('woff2');
+			}
+			body { font-family: "GenJyuuGothicX"; }
+		</style>
 	</head>
 	<body style="margin:0px; overflow:hidden;">
-		<!-- maxDetectionRate‚Íƒ}[ƒJ[‚ÌŒŸoƒtƒŒ[ƒ€ƒŒ[ƒgBƒ‚ƒoƒCƒ‹Œü‚¯‚È‚ç15`20’ö“x‚ª–ÚˆÀ -->
-		<a-scene embedded arjs="debugUIEnabled:false; patternRatio: 0.9; detectionMode: mono; maxDetectionRate: 15;" vr-mode-ui="enabled: false">
+		<!-- maxDetectionRateã¯ãƒžãƒ¼ã‚«ãƒ¼ã®æ¤œå‡ºãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã€‚ãƒ¢ãƒã‚¤ãƒ«å‘ã‘ãªã‚‰15ï½ž20ç¨‹åº¦ãŒç›®å®‰ -->
+		<a-scene embedded arjs="debugUIEnabled:false; patternRatio: 0.9; detectionMode: mono; maxDetectionRate: 30;" vr-mode-ui="enabled: false">
 			<a-marker id="logo" type="pattern" url="assets/logo_marker.patt" changeMatrixMode="modelViewMatrix"></a-marker>
 			<a-marker id="qr" type="pattern" url="assets/qr_marker.patt" changeMatrixMode="modelViewMatrix"></a-marker>
 			<a-entity camera></a-entity>
