@@ -283,16 +283,6 @@ window.onload = function(){
 						plane.app.stage.addChild(model);
 						plane.app.stage.addChild(model.masks);
 					});
-
-					//更新処理
-					const ticker = function(delta_time){
-						plane.forEach(function(model){
-							model.update(delta_time);
-							model.masks.update(plane.app.renderer);
-						});
-					}
-					//appに更新処理を紐付け
-					plane.app.ticker.add(ticker);
 				});
 			});
 			resolve();
@@ -420,6 +410,7 @@ window.onload = function(){
 			});
 			plane.mesh.material.map.needsUpdate = true;
 		}
+		const millisecond_to_frame = 60 / 1000;
 		//毎フレーム呼ばれる処理
 		const tick = function(time, timeDelta){
 			let plane = this.el.plane;
@@ -429,10 +420,15 @@ window.onload = function(){
 				if(!orientationchanged){ plane.app.stage.renderable = true; }
 				plane.mesh.material.map.needsUpdate = true;
 
+				const time_delta = timeDelta * millisecond_to_frame;
 				let pos = this.el.object3D.getWorldPosition();
 				let gaze = this.el.object3D.front.getWorldPosition();
 				gaze.sub(pos);
-				plane.forEach(function(model){
+
+				const len = plane.length;
+				for(let i = 0; i < len; i++){
+					let model = plane[i];
+
 					//視線追従モーションの更新
 					model.gaze = gaze;
 
@@ -443,7 +439,11 @@ window.onload = function(){
 						motion.stop();
 						motion.play(model.motions[rand]);
 					}
-				});
+
+					//更新処理
+					model.update(time_delta);
+					model.masks.update(plane.app.renderer);
+				}
 
 				//テキストの文字送り
 				let message = plane.message;
