@@ -12,7 +12,7 @@
 
 		<script src="https://rawgit.com/Live2D/CubismJsComponents/master/example/wwwroot/js/live2dcubismframework.js"></script>
 		<script src="https://rawgit.com/Live2D/CubismJsComponents/master/example/wwwroot/js/live2dcubismpixi.js"></script>
-		<script src="js/pixiAframeAR.js"></script>
+		<script src="js/live2dAframeAR.js"></script>
 		<style type="text/css">
 			@font-face {
 				font-family: "GenJyuuGothicX";
@@ -23,9 +23,9 @@
 	</head>
 	<body style="margin:0px; overflow:hidden;">
 		<!-- maxDetectionRateはマーカーの検出フレームレート。モバイル向けなら15～20程度が目安 -->
-		<a-scene embedded arjs="debugUIEnabled:false; patternRatio: 0.9; detectionMode: mono; maxDetectionRate: 30;" vr-mode-ui="enabled: false">
-			<a-marker id="logo" type="pattern" url="assets/logo_marker.patt" changeMatrixMode="modelViewMatrix"></a-marker>
-			<a-marker id="qr" type="pattern" url="assets/qr_marker.patt" changeMatrixMode="modelViewMatrix"></a-marker>
+		<a-scene embedded arjs="debugUIEnabled: false; patternRatio: 0.9; detectionMode: mono; maxDetectionRate: 15;" vr-mode-ui="enabled: false" light="defaultLightsEnabled: false">
+			<a-marker id="qr" type="pattern" url="assets/qr_marker.patt"></a-marker>
+			<!-- <a-marker id="logo" type="pattern" url="assets/logo_marker.patt"></a-marker> -->
 			<a-entity camera></a-entity>
 		</a-scene>
 	</body>

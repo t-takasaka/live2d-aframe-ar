@@ -3,7 +3,7 @@
 	"FileReferences": {
 		"Moc": "Koharu.moc3",
 		"Textures": [
-			"Koharu.512/texture_00.png"
+			"Koharu.2048/texture_00.png"
 		]
 	}
 }

@@ -141,7 +141,7 @@
 			var width = this.data.width + padding;
 			var height = this.data.height + padding;
 			roundedRect( roundedRectShape, x, y, width, height, corners[0], corners[1], corners[2], corners[3] );
-			return new THREE.ShapeGeometry( roundedRectShape );
+			return new THREE.ShapeBufferGeometry( roundedRectShape );
 		},
 		pause: function () {},
 		play: function () {}

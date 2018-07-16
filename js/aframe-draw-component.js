@@ -112,13 +112,9 @@
 				this.el.object3D.children[0].material.map = this.texture;
 
 				//※UVを0～1の範囲に調整（テクスチャが途中で切れるため）
-				let uvs = this.el.object3D.children[0].geometry.faceVertexUvs[0];
-				for(let i = 0; i < uvs.length; i++){
-					for(let j = 0; j < uvs[i].length; j++){
-						uvs[i][j]["x"] /= uv_adj;
-						uvs[i][j]["y"] /= uv_adj;
-					}
-				}
+				let uvs = this.el.object3D.children[0].geometry.attributes.uv.array;
+				for(let i = 0; i < uvs.length; i++){ uvs[i] /= uv_adj; }
+
 			}
 			else { //backwards compatibility
 				this.el.object3D.material = material;

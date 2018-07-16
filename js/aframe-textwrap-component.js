@@ -144,9 +144,10 @@
 						ctx.lineWidth = data.lineWidth;
 						ctx.lineCap = data.lineCap;
 						ctx.lineJoin = data.lineJoin;
-						ctx.strokeStyle=data.strokeStyle;
+						ctx.strokeStyle = data.strokeStyle;
 						ctx.strokeText(text,x,y);
 					}
+					ctx.shadowColor = data.strokeStyle;
 					ctx.fillText(text,x,y);
 				}
 			}
