@@ -1,6 +1,12 @@
 //////////////////////////////////////////////////////////////////////
-//↓設定項目
+//設定項目ここから
 //////////////////////////////////////////////////////////////////////
+
+//マーカーのジェネレータは下記にあります
+//https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html
+
+//フォントのサブセット化ツールは下記にあります
+//https://opentype.jp/subsetfontmk.htm
 
 //FPSを表示する場合はtrue、表示しない場合はfalse
 const show_fps = true;
@@ -46,8 +52,11 @@ const haruto = {
 const model_group1 = { 
 	"model1":{ 
 		"model":koharu, 
+		//モデルの位置
 		"position3D":{ "x": 0.0, "y": 0.0, "z": 0.0 }, 
-		"scale3D":{ "w": 2, "h": 2 }, //1でマーカーの黒枠と同じサイズ
+		//モデルの大きさ。1でマーカーの黒枠と同じサイズ
+		"scale3D":{ "w": 2, "h": 2 }, 
+		//メッセージウィンドウ
 		"message":{
 			"window_position": "-0.7 -1.5 0.0", 
 			"window_radius": 0.1, 
@@ -56,23 +65,32 @@ const model_group1 = {
 			"window_opacity": 0.9, 
 			"texture_size": 512, 
 			"texture_aspect": 0.55,  // hight/width
+			//メッセージウィンドウのボーダー幅
 			"border_size": 0.02, 
+			//テキスト
+			//※ダブルクォーテーションで囲んだカンマまでの行が一度に表示されます。改行は「\n」です
 			"text": ["メッセージウィンドウの\nサンプルプログラムです。\nタップで次に進みます。\nタップで次に進みます。", 
 				"ウィンドウやフォント、\nテキストスピードなど\n諸々変更可能です。", 
 				"フォントは使用文字だけ\nサブセット化すれば、\n容量を軽くできます。",
 				], 
 			"text_speed": 100, //ms
+			//フォント
 			"font_size": 40, 
 			"font_color": "#FFF", 
+			//※html側のfont-familyで指定が必要
 			"font_type": "GenJyuuGothicX", 
+			//フォントの枠線
 			"stroke_size": "10", 
 			"stroke_color": "#000", 
+			//フォントの影（一旦保留）
 			"shadow_color": "#888", 
 			"shadow_offset_x": 0, 
 			"shadow_offset_y": 0, 
 			"shadow_blur": 0, 
+			//テキストのマージン
 			"margin_x": 20, 
 			"margin_y": 20, 
+			//テキストの位置行ごとの高さ
 			"line_height": 20, 
 		},
 	}, 
@@ -95,8 +113,9 @@ const marker_group = {
 };
 
 //////////////////////////////////////////////////////////////////////
-//↑設定項目
+//設定項目ここまで
 //////////////////////////////////////////////////////////////////////
+
 window.onload = function(){
 	//カメラの取得
 	//※a-marker-cameraはマーカーがカメラから外れた後も表示が残るので注意
