@@ -397,7 +397,7 @@ window.onload = function(){
 					let s = j * 2, d = j * 3;
 					position[d + 0] = mesh.vertices[s + 0]; 
 					position[d + 1] = mesh.vertices[s + 1]; 
-					position[d + 2] = 0.1; 
+					position[d + 2] = 0.0; 
 				}
 				geometry.attributes.position.needsUpdate = true;
 
@@ -555,7 +555,7 @@ window.onload = function(){
 						let s = j * 2, d = j * 3;
 						dst[d + 0] = src[s + 0]; 
 						dst[d + 1] = src[s + 1]; 
-						dst[d + 2] = 0.1; 
+						dst[d + 2] = 0.0; 
 					}
 					position.needsUpdate = true;
 				}

@@ -66,6 +66,7 @@
 			material.flatShading = true;
 			material.lights = false;
 			material.transparent = true;
+			material.side = THREE.DoubleSide;
 			material.opacity = 0.0;
 			material.color = new THREE.Color(this.data.color);
 

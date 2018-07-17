@@ -104,6 +104,7 @@
 			material.flatShading = true;
 			material.lights = false;
 			material.transparent = true;
+			material.side = THREE.DoubleSide;
 			material.opacity = this.data.opacity;
 
 
