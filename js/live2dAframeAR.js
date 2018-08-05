@@ -349,7 +349,7 @@ window.onload = function(){
 			mask_material.fog = false;
 			mask_material.flatShading = true;
 			mask_material.transparent = true;
-			mask_material.premultipliedAlpha = true;
+			//mask_material.premultipliedAlpha = true;
 			//※メッシュの反転コピーがあるのでDoubleSideを指定する
 			mask_material.side = THREE.DoubleSide;
 			mask_material.alphaTest = 0.5;
@@ -361,10 +361,9 @@ window.onload = function(){
 			material.fog = false;
 			material.flatShading = true;
 			material.transparent = true;
-			material.premultipliedAlpha = true;
+			//material.premultipliedAlpha = true;
 			//※メッシュの反転コピーがあるのでDoubleSideを指定する
 			material.side = THREE.DoubleSide;
-			material.alphaTest = 0.5;
 
 			model.mesh_object_cache = {};
 			let texture_cache = {};
@@ -428,10 +427,12 @@ window.onload = function(){
 
 				//ブレンドモード
 				if(LIVE2DCUBISMCORE.Utils.hasBlendAdditiveBit(model._coreModel.drawables.constantFlags[i])){
-					mesh_object.material.blendMode = THREE.AdditiveBlending; //加算
+					mesh_object.material.blending = THREE.AdditiveBlending; //加算
+					mesh_object.material.alphaTest = 0.9;
 
 				}else if(LIVE2DCUBISMCORE.Utils.hasBlendMultiplicativeBit(model._coreModel.drawables.constantFlags[i])){
-					mesh_object.material.blendMode = THREE.MultiplyBlending; //乗算
+					mesh_object.material.blending = THREE.MultiplyBlending; //乗算
+					mesh_object.material.alphaTest = 0.9;
 				}
 
 				//スケール
@@ -474,8 +475,9 @@ window.onload = function(){
 						gl.enable(gl.STENCIL_TEST);
 						gl.clear(gl.STENCIL_BUFFER_BIT);
 						gl.stencilFunc(gl.ALWAYS, 1, 0xffffffff);
-						gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
+						gl.stencilOp(gl.KEEP, gl.REPLACE, gl.REPLACE);
 						gl.colorMask(false, false, false, false);
+						gl.depthMask(false);
 
 						//マスクする側のメッシュのレンダリング
 						for(let j = 0; j < mask_object_cache.length; ++j){
@@ -485,6 +487,7 @@ window.onload = function(){
 						gl.stencilFunc(gl.EQUAL, 1, 0xffffffff);
 						gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 						gl.colorMask(true, true, true, true);
+						gl.depthMask(true);
 					}
 					mesh_object.onAfterRender = function(renderer, scene, camera){ 
 						let gl = renderer.context;
@@ -543,7 +546,7 @@ window.onload = function(){
 				//表示/非表示
 				mesh.visible = LIVE2DCUBISMCORE.Utils.hasIsVisibleBit(dynamic_flag);
 				//透明度
-				mesh.opacity = drawables.opacities[i];
+				mesh.material.opacity = drawables.opacities[i];
 				//頂点位置
 				if(LIVE2DCUBISMCORE.Utils.hasVertexPositionsDidChangeBit(dynamic_flag)){
 					let position = mesh.geometry.attributes.position;
