@@ -6,13 +6,13 @@ Live2DをWebARで表示するサンプルです。
 
 <img src="https://raw.githubusercontent.com/t-takasaka/live2d-aframe-ar/master/demo.gif">
 
-サンプルは[こちら](https://t-takasaka.github.io/live2d-aframe-ar/)にあります。ウェブカメラの付いたPCや、スマートフォンでアクセスしてください。
+## サンプル
 
-下記のQRコードからもサンプルにアクセスできます。
+ウェブカメラの付いたPCで[こちら](https://t-takasaka.github.io/live2d-aframe-ar/)にアクセスするか、スマートフォンで下記のQRコードにアクセスしてください。
+
+サンプルページの表示後、再度、QRコードにカメラを向けるとモデルが表示されます。
 
 <img src="https://raw.githubusercontent.com/t-takasaka/live2d-aframe-ar/master/assets/qr_marker.png" width="300px">
-
-サンプルページの表示後、上記のQRコードにカメラを向けるとモデルが表示されます。
 
 ## 機能
 
@@ -34,4 +34,11 @@ Live2DをWebARで表示するサンプルです。
 
 - 設定値の分離（jsonファイル？）
 
+## 注意事項
+
+- マーカーのジェネレータは[こちら](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)にあります
+
+- htmlファイルのa-sceneタグにある「patternRatio」はジェネレータの「Pattern Ratio」の値と一致させてください。
+
+- 
 
